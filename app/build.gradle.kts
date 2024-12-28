@@ -12,7 +12,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.example.rcapp"
-        minSdk = 31
+        minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -54,5 +54,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.okhttp)
+    implementation(libs.swiperefreshlayout)
 
 }

@@ -6,16 +6,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
@@ -26,9 +23,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.rcapp.databinding.ActivityCameraBinding;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -37,7 +31,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -130,7 +123,7 @@ public class CameraActivity extends AppCompatActivity {
                 // 选择后置摄像头
                 CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
                 // 绑定用例到相机
-                Camera camera = cameraProvider.bindToLifecycle(
+                cameraProvider.bindToLifecycle(
                         this,
                         cameraSelector,
                         preview,

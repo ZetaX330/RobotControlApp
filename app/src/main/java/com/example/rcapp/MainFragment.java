@@ -1,33 +1,20 @@
 package com.example.rcapp;
 
-import static android.app.Activity.RESULT_OK;
-
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.os.IBinder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.rcapp.databinding.FragmentMainBinding;
-import com.example.rcapp.ArcSeekBar;
 
 import java.text.DecimalFormat;
-import java.text.MessageFormat;
-import java.util.List;
 import java.util.UUID;
 public class MainFragment extends Fragment {
     private FragmentMainBinding binding;
@@ -54,31 +41,20 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.CameraGoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), CameraActivity.class));
+        binding.CameraGoBtn.setOnClickListener(v -> startActivity(new Intent(getActivity(), CameraActivity.class)));
+        binding.dataSendBtn.setOnClickListener(v -> {
+            String hexString = binding.dataSendEt.getText().toString().trim().replace(" ", "");
+            if (!hexString.isEmpty()) {
+                String dataHex = binding.dataSendEt.getText().toString();
+                SendDataToDevice(dataHex);
             }
         });
-        binding.dataSendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String hexString = binding.dataSendEt.getText().toString().trim().replace(" ", "");
-                if (!hexString.isEmpty()) {
-                    String dataHex = binding.dataSendEt.getText().toString();
-                    SendDataToDevice(dataHex);
-                }
-            }
-        });
-        binding.angleAsb.setOnAngleChangeListener(new ArcSeekBar.OnAngleChangeListener() {
-            @Override
-            public void onAngleChanged(float angle) {
-                // 创建 DecimalFormat 实例，指定格式
-                DecimalFormat df = new DecimalFormat("#.00");
-                String formattedAngle = df.format(angle);
-                binding.angleTv.setText(String.format("%s°", formattedAngle));
+        binding.angleAsb.setOnAngleChangeListener(angle -> {
+            // 创建 DecimalFormat 实例，指定格式
+            DecimalFormat df = new DecimalFormat("#.00");
+            String formattedAngle = df.format(angle);
+            binding.angleTv.setText(String.format("%s°", formattedAngle));
 
-            }
         });
     }
     private void SendDataToDevice(String dataHex){
