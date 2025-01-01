@@ -7,6 +7,8 @@
     <string name="连接">连接</string>
     <string name="相机">相机</string>
     <string name="发送测试数据">发送测试数据</string>
+    <string name="指令发送时间">14:43:55</string>
+    <string name="指令发送内容">"55 55 17 03 06 E8 03 06 EE 02 07 6E 01 08 C7 01 0E 14 03 0F 68 02 10 79 01"</string>
     <string name="发送">发送</string>
     <string name="摄像">摄像</string>
     <string name="拍照">拍照</string>

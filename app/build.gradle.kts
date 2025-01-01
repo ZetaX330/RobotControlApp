@@ -1,7 +1,6 @@
-import java.net.http.WebSocket
-
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -9,6 +8,7 @@ android {
     compileSdk = 34
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
     defaultConfig {
         applicationId = "com.example.rcapp"
@@ -33,6 +33,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11" // 确保 Kotlin 使用与 Java 相同的 JVM 版本
+    }
 
 }
 
@@ -49,6 +52,7 @@ dependencies {
     implementation(libs.camera.video)
     implementation(libs.camera.view)
     implementation(libs.camera.extensions)
+    implementation(libs.recyclerview)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

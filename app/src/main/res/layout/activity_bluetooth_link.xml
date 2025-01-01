@@ -4,9 +4,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BluetoothLinkActivity"
+    tools:context=".activity.BluetoothLinkActivity"
     android:orientation="vertical">
-    <com.example.rcapp.MyToolBar
+    <com.example.rcapp.toolbar.MainToolbar
         android:id="@+id/myToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -14,10 +14,11 @@
         android:id="@+id/bluetooth_refresh_srl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bluetooth_lv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            tools:listitem="@layout/scan_device_item_layout"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
