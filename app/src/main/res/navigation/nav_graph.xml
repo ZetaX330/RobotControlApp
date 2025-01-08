@@ -1,0 +1,27 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.rcapp.fragment.RobotMainFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.rcapp.fragment.UserFragment"
+        android:label="User" />
+    <fragment
+        android:id="@+id/userFragment1"
+        android:name="com.example.rcapp.fragment.UserFragment"
+        android:label="User" />
+    <fragment
+        android:id="@+id/userFragment2"
+        android:name="com.example.rcapp.fragment.UserFragment"
+        android:label="User" />
+
+
+
+
+</navigation>

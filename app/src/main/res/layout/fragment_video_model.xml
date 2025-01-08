@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.poseLandmarker.VideoModelFragment"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/light_blue_gray">
+        <TextView
+            android:id="@+id/inference_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_inference_time"
+            android:textColor="@color/bottom_sheet_text_color"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+
+        <TextView
+            android:id="@+id/inference_time_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="20dp"
+            android:text="@string/inference_time"
+            android:textColor="@color/bottom_sheet_text_color"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+        <ImageView
+            android:id="@+id/plc_setting_iv"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_plm_setting"/>
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <VideoView
+            android:id="@+id/video_model_show_vv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"/>
+
+<!--        <com.example.rcapp.OverlayView-->
+<!--            android:id="@+id/overlay"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
+    </FrameLayout>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.poseLandmarker.ImageModelFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/light_blue_gray">
+        <TextView
+            android:id="@+id/inference_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_inference_time"
+            android:textColor="@color/bottom_sheet_text_color"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+
+        <TextView
+            android:id="@+id/inference_time_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="20dp"
+            android:text="@string/inference_time"
+            android:textColor="@color/bottom_sheet_text_color"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+        <ImageView
+            android:id="@+id/plc_setting_iv"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_plm_setting"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/image_model_show_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:visibility="gone" />
+
+    <com.example.rcapp.OverlayView
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>

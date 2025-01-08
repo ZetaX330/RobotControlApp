@@ -2,9 +2,9 @@ package com.example.rcapp.adapter
 
 import android.Manifest.permission
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.pm.PackageManager
+import android.bluetooth.le.ScanResult
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
@@ -15,25 +15,27 @@ import com.example.rcapp.databinding.ScanDeviceItemLayoutBinding
 class LeDeviceListAdapter(private val context: Context) :
     RecyclerView.Adapter<LeDeviceListAdapter.ViewHolder>() {
 
-    private val bluetoothList: MutableList<BluetoothDevice> =
+    private val bluetoothList: MutableList<ScanResult> =
+        ArrayList()
+    private val seenDevices : MutableList<String> =
         ArrayList()
 
     /**
      * 添加设备到列表中，bluetoothList.size-1为最新的设备下标号
      */
     @SuppressLint("MissingPermission")
-    fun addDevice(device: BluetoothDevice) {
-        if (!bluetoothList.contains(device)) {
-            if(device.name!=null){
-                bluetoothList.add(device)
-                notifyItemInserted((bluetoothList.size - 1))
-            }
+    fun addDevice(result: ScanResult) {
+        val deviceAddress = result.device.address
+        if (!seenDevices.contains(deviceAddress)) {
+            bluetoothList.add(result)
+            seenDevices.add(deviceAddress)
+            notifyItemInserted((bluetoothList.size - 1))
         }
     }
-
     fun clearList() {
         val size = bluetoothList.size
         bluetoothList.clear()
+        seenDevices.clear()
         notifyItemRangeRemoved(0, size)
     }
 
@@ -41,7 +43,7 @@ class LeDeviceListAdapter(private val context: Context) :
         return bluetoothList.size
     }
 
-    fun getItem(position: Int): BluetoothDevice {
+    fun getItem(position: Int): ScanResult {
         return bluetoothList[position]
     }
 
@@ -53,27 +55,28 @@ class LeDeviceListAdapter(private val context: Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val device = getItem(position)
-
+        val result = getItem(position)
+        result.device
         // 检查BLUETOOTH_CONNECT权限
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ActivityCompat.checkSelfPermission(context, permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             (context as BluetoothLinkActivity).requestPermission(permission.BLUETOOTH_CONNECT)
             return
         }
-
-        holder.binding.bluetoothNameTv.text=device.name
+        holder.binding.bluetoothNameTv.text=result.device.name
+        holder.binding.bluetoothAddressTv.text=result.device.address
+        //holder.binding.bluetoothAddressTv.text=result.rssi.toString()+" dBm"
         holder.binding.executePendingBindings()
-
-        // 设置按钮点击事件
-        holder.binding.bluetoothLinkBtn.setOnClickListener {
+        holder.binding.root.setOnClickListener{
             if (context is BluetoothLinkActivity) {
                 BluetoothLinkActivity.bleDeviceConnect(context, position)
             }
         }
+        // 设置按钮点击事件
+//        holder.binding.bluetoothLinkBtn.setOnClickListener {
+//            if (context is BluetoothLinkActivity) {
+//                BluetoothLinkActivity.bleDeviceConnect(context, position)
+//            }
+//        }
     }
 
     // ViewHolder继承自父类RecyclerView.ViewHolder

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="com.example.rcapp.viewmodel.MainToolbarViewModel" />
+    </data>
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Material3.DynamicColors.Light.NoActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/main_tb"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/light_blue_gray"
+            app:title="">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview"
+                android:layout_width="wrap_content"
+                android:layout_height="46dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dp"
+                app:cardCornerRadius="23dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/bluetooth_name_tv"
+                        android:layout_width="75dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:gravity="center_vertical"
+                        android:text="@{viewModel.ToolbarState.component1()}" />
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackground"
+                            app:cardCornerRadius="19dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardElevation="0dp"
+                            android:clickable="true"
+                            android:focusable="true">
+                            <ImageView
+                                android:id="@+id/bluetooth_ic_background_iv"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/light_blue_gray"
+                                android:contentDescription="@string/蓝牙"
+                                android:scaleType="centerInside" />
+                        </androidx.cardview.widget.CardView>
+
+                        <ImageView
+                            android:id="@+id/bluetooth_manage_iv"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:contentDescription="@string/蓝牙"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_bluetooth_selector"
+                            android:clickable="false"/>
+
+                        <ImageView
+                            android:id="@+id/loading_iv"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/蓝牙"
+                            android:src="@drawable/ic_load"/>
+                    </FrameLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+</layout>

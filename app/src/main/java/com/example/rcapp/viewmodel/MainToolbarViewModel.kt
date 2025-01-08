@@ -28,7 +28,8 @@ object MainToolbarViewModel {
     data class ToolbarState(
         val deviceName: String = "",
         val bluetoothStatus: BluetoothStatus = BluetoothStatus.DISCONNECTED,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val isDrop:Boolean = false
     )
 
     enum class BluetoothStatus {

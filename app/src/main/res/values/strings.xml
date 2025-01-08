@@ -11,11 +11,61 @@
     <string name="指令发送内容">"55 55 17 03 06 E8 03 06 EE 02 07 6E 01 08 C7 01 0E 14 03 0F 68 02 10 79 01"</string>
     <string name="发送">发送</string>
     <string name="摄像">摄像</string>
+    <string name="摄像模拟">摄像模拟</string>
+    <string name="蓝牙管理">蓝牙管理</string>
     <string name="拍照">拍照</string>
     <string name="归正">归正</string>
     <string name="角度">角度:</string>
     <string name="角度示例">175.34°</string>
     <string name="设备名称">设备名称</string>
+    <string name="设备地址">74:A5:8C:1A:43:73</string>
+    <string name="信号强度">-54 dBm</string>
     <string name="title_activity_ble_service_base">BleServiceBaseActivity</string>
+    <string name="已连接设备">已连接设备</string>
 
+
+    <string name="media_pipe">MediaPipe</string>
+
+    <string name="alt_bottom_sheet_chevron">Bottom sheet expandable indicator</string>
+
+    <string name="alt_bottom_sheet_max_results_button_minus">Decreasing
+        maximum pose results button</string>
+    <string name="alt_bottom_sheet_max_results_button_plus">Increasing
+        maximum pose results button</string>
+    <string name="alt_bottom_sheet_threshold_button_minus">Decreasing
+        threshold of pose detect results button</string>
+    <string name="alt_bottom_sheet_threshold_button_plus">Increasing
+        threshold of pose detect results button</string>
+    <string name="menu_camera">Camera</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="tv_gallery_placeholder">Click + to add an image or a video
+        to begin running the pose landmarker.</string>
+
+    <string name="label_inference_time">延时:</string>
+    <string name="label_fps">Frames per Second</string>
+    <string name="label_pose_detection_confidence_threshold">Detection
+        Threshold</string>
+    <string name="label_pose_tracking_confidence_threshold">Tracking
+        Threshold</string>
+    <string name="label_pose_presence_confidence_threshold">Presence
+        Threshold</string>
+    <string name="label_num_poses">Number of Poses</string>
+    <string name="label_delegate">Delegate</string>
+    <string name="label_models">Model</string>
+    <string name="plc_setting">plc_setting</string>
+    <string name="camera_switch">camera_switch\n</string>
+    <string name="_0ms">0ms</string>
+    <string name="inference_time">%d</string>
+    <string name="camera_time">00:00:00</string>
+    <string name="毫秒">ms</string>
+    <string-array name="delegate_spinner_titles">
+        <item>CPU</item>
+        <item>GPU</item>
+    </string-array>
+
+    <string-array name="models_spinner_titles">
+        <item>Pose Landmarker Full</item>
+        <item>Pose Landmarker Lite</item>
+        <item>Pose Landmarker Heavy</item>
+    </string-array>
 </resources>

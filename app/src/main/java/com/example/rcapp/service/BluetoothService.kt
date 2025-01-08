@@ -13,14 +13,17 @@ import android.bluetooth.BluetoothStatusCodes
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.example.rcapp.activity.BleServiceBaseActivity
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +32,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
+
 
 class BluetoothService : Service() {
     private val binder: IBinder = LocalBinder()
@@ -39,10 +43,13 @@ class BluetoothService : Service() {
     private var bluetoothGatt: BluetoothGatt? = null
     private var serviceStatus: Boolean = false
     private var connectionJob: Job? = null
+    private var scanJob: Job? = null
+
     private var isConnected = false
     fun getBluetoothAdapter(): BluetoothAdapter? {
         return bluetoothAdapter
-    }fun getServiceStatus(): Boolean {
+    }
+    fun getServiceStatus(): Boolean {
         return serviceStatus
     }
     //返回设备蓝牙服务是否可用
@@ -53,13 +60,19 @@ class BluetoothService : Service() {
 
     //设备查找回调，传给BluetoothLinkActivity查找到的设备
     fun interface DeviceFoundListener {
-        fun onDeviceFound(device: BluetoothDevice?)
+        fun onDeviceFound(result: ScanResult)
     }
 
     //设备连接回调，传给BluetoothLinkActivity连接结果
     fun interface BLEConnectionListener {
         fun onBLEConnection(gatt: BluetoothGatt?,isConnected: Boolean)
     }
+    /**
+     * 下面设置接口的方法都将接口示例当作参数
+     * 如果使用Lambda表达式作为参数则应写为
+     * this.bleConnectionListener = BLEConnectionListener { gatt, isConnected -> listener(gatt, isConnected) }
+     * 但是Kotlin允许用单个抽象方法的接口通过 Lambda 表达式来实例化，详细见setBLEConnectionListener的使用处
+     */
     fun setBLEConnectionListener(listener: BLEConnectionListener) {
         this.bleConnectionListener = listener
     }
@@ -92,7 +105,7 @@ class BluetoothService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         //停止扫描
-        stopScan()
+        //stopScan()
         //停止设备蓝牙状态广播接收
         unregisterReceiver(bluetoothReceiver)
         //关闭与设备的连接
@@ -156,10 +169,21 @@ class BluetoothService : Service() {
                 val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
                 if (state == BluetoothAdapter.STATE_ON) {
                     initBluetooth()
+                    bleServiceBaseActivity!!.setBluetoothStatus(state)
+
                 }
                 if (bleServiceBaseActivity != null) {
                     //更新BleServiceBaseActivity中蓝牙状态，实际上最终改变的是toolbar状态，以及相应状态的处理（比如弹出提醒框）
-                    bleServiceBaseActivity!!.setBluetoothStatus(state)
+                    if(state==BluetoothAdapter.STATE_OFF){
+                        if (!checkPermission(permission.BLUETOOTH_CONNECT)) {
+                            requestPermission(permission.BLUETOOTH_CONNECT)
+                            Log.e(TAG, "No Permission")
+                            return
+                        }
+                        bluetoothGatt?.close()
+                        bleServiceBaseActivity!!.setBluetoothStatus(state)
+
+                    }
                 }
             }
         }
@@ -167,33 +191,43 @@ class BluetoothService : Service() {
 
     //开始扫描蓝牙设备
     fun startScan() {
-        //检查bluetoothLeScanner是否为null，同时保证上次扫描没有结束
-        if (bluetoothLeScanner == null || scanning) {
-            return
-        }
+        //检查bluetoothLeScanner是否为null，直接结束上次扫描
+        stopScan()
         if (!checkPermission(permission.BLUETOOTH_SCAN)) {
             requestPermission(permission.BLUETOOTH_SCAN)
             return
         }
-        scanning = true
         //开启扫描操作
-        bluetoothLeScanner!!.startScan(leScanCallback)
+        //SCAN_MODE_LOW_LATENCY为高频率扫描，设备发现速度快，但是耗电高
+        val scanSettings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
+        Log.d(TAG, "Scanning will start")
+        if(!scanning){
+            scanning = true
+            bluetoothLeScanner!!.startScan(null, scanSettings, leScanCallback)
+            scanJob = CoroutineScope(Dispatchers.Main).launch {
+                delay(10000)
+                stopScan()
+            }
+            Log.d(TAG, "Scanning start")
+        }
+
     }
 
     //停止扫描蓝牙设备
-    fun stopScan() {
+    private fun stopScan() {
         //检查bluetoothLeScanner是否为null，同时保证有扫描正在进行
-        if (bluetoothLeScanner == null || !scanning) {
-            return
-        }
+        bluetoothLeScanner?.takeIf { scanning } ?: return
         if (!checkPermission(permission.BLUETOOTH_SCAN)) {
             requestPermission(permission.BLUETOOTH_SCAN)
             return
         }
-        scanning = false
         //停止扫描操作
         bluetoothLeScanner!!.stopScan(leScanCallback)
-        Log.d(TAG, "Scanning stopped")
+        scanning = false
+        scanJob?.cancel()
+        Log.d(TAG, "Scanning stop")
     }
 
     //蓝牙设备扫描回调
@@ -204,8 +238,16 @@ class BluetoothService : Service() {
             //获取扫描到的设备
             val device = result.device
             if (deviceFoundListener != null) {
-                //BluetoothLinkActivity实现了该接口，接收扫描到的设备
-                deviceFoundListener!!.onDeviceFound(device)
+                if (!checkPermission(permission.BLUETOOTH_CONNECT)) {
+                    requestPermission(permission.BLUETOOTH_CONNECT)
+                    Log.e(TAG, "No Permission")
+                    return
+                }
+                if (!device.name.isNullOrEmpty()) {
+                    //BluetoothLinkActivity实现了该接口，接收扫描到的结果
+                    deviceFoundListener!!.onDeviceFound(result)
+                }
+
             }
         }
 
@@ -282,6 +324,7 @@ class BluetoothService : Service() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun writeData(characteristicUUID: UUID, data: ByteArray) {
         if (bluetoothGatt == null) {
             Log.e(TAG, "No connected device")

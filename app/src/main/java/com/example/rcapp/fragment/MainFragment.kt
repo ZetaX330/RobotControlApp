@@ -2,19 +2,20 @@ package com.example.rcapp.fragment
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rcapp.activity.BleServiceBaseActivity
-import com.example.rcapp.activity.CameraActivity
+import com.example.rcapp.activity.PoseLandmarkerActivity
 import com.example.rcapp.adapter.InsSendListAdapter
 import com.example.rcapp.service.BluetoothService
 import com.example.rcapp.databinding.FragmentMainBinding
 import com.example.rcapp.model.InstructionSend
-import java.text.DecimalFormat
 import java.time.LocalTime
 import java.util.UUID
 
@@ -49,7 +50,7 @@ class MainFragment : Fragment() {
             startActivity(
                 Intent(
                     activity,
-                    CameraActivity::class.java
+                    PoseLandmarkerActivity::class.java
                 )
             )
         }
@@ -70,25 +71,25 @@ class MainFragment : Fragment() {
             }
         }
 
-        binding!!.angleAsb.setOnAngleChangeListener { angle: Float ->
-            // 创建 DecimalFormat 实例，指定格式
-            val df = DecimalFormat("#.00")
-            val formattedAngle = df.format(angle.toDouble())
-            binding!!.angleTv.text = String.format("%s°", formattedAngle)
-            sendDataToDevice(formattedAngle)
-            // 添加新的数据行
-            val currentTime = LocalTime.now()
-            val hour = currentTime.hour
-            val minute = currentTime.minute
-            val second = currentTime.second
-            val instruction = InstructionSend("$hour:$minute:$second",formattedAngle)
-            insSendListAdapter!!.addIns(instruction)
-            binding!!.dataSendShowRv.post {
-                binding!!.dataSendShowRv.smoothScrollToPosition(
-                    insSendListAdapter!!.itemCount - 1
-                )
-            }
-        }
+//        binding!!.angleAsb.setOnAngleChangeListener { angle: Float ->
+//            // 创建 DecimalFormat 实例，指定格式
+//            val df = DecimalFormat("#.00")
+//            val formattedAngle = df.format(angle.toDouble())
+//            binding!!.angleTv.text = String.format("%s°", formattedAngle)
+//            sendDataToDevice(formattedAngle)
+//            // 添加新的数据行
+//            val currentTime = LocalTime.now()
+//            val hour = currentTime.hour
+//            val minute = currentTime.minute
+//            val second = currentTime.second
+//            val instruction = InstructionSend("$hour:$minute:$second",formattedAngle)
+//            insSendListAdapter!!.addIns(instruction)
+//            binding!!.dataSendShowRv.post {
+//                binding!!.dataSendShowRv.smoothScrollToPosition(
+//                    insSendListAdapter!!.itemCount - 1
+//                )
+//            }
+//        }
     }
 
     private fun initListAdapter() {
@@ -99,6 +100,7 @@ class MainFragment : Fragment() {
         binding!!.dataSendShowRv.layoutManager = LinearLayoutManager(getContext())
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun sendDataToDevice(dataHex: String) {
         bluetoothService = (context as BleServiceBaseActivity).bluetoothService
         // 调用 Service 方法进行数据传输

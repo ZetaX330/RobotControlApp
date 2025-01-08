@@ -6,10 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".activity.BluetoothLinkActivity"
     android:orientation="vertical">
-    <com.example.rcapp.toolbar.MainToolbar
+    <com.example.rcapp.toolbar.MainBluetoothToolbar
         android:id="@+id/myToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="55dp"/>
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/bluetooth_refresh_srl"
         android:layout_width="match_parent"

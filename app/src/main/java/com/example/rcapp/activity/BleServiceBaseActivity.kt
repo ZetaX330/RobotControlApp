@@ -10,14 +10,19 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.viewbinding.ViewBinding
+import com.example.rcapp.R
+import com.example.rcapp.databinding.ActivityBleServiceBaseBinding
 import com.example.rcapp.viewmodel.MainToolbarViewModel
 import com.example.rcapp.service.BluetoothService
 import com.example.rcapp.service.BluetoothService.LocalBinder
-import com.example.rcapp.toolbar.MainToolbar
+import com.example.rcapp.toolbar.MainBluetoothToolbar
 
 /**
  *绑定该基类的Activity，执行时生命周期如下
@@ -28,33 +33,84 @@ import com.example.rcapp.toolbar.MainToolbar
 
  *此基类Activity实现了服务绑定，权限请求，Toolbar管理等多个Activity共同需要实现的功能
  */
-abstract class BleServiceBaseActivity : AppCompatActivity() {
+abstract class BleServiceBaseActivity: AppCompatActivity() {
     var bluetoothService: BluetoothService? = null
-    private var mainToolbar: MainToolbar? = null
+    var mainBluetoothToolbar: MainBluetoothToolbar? = null
+
     private var isBound = false
     //创建一个抽象方法，用于绑定蓝牙Service后ServiceConnection回调中不同Activity的处理
     protected abstract fun onBluetoothServiceConnected()
-
-    //初始化MainToolbar
-    fun initMainToolbar(myToolbarId: Int) {
-        mainToolbar = findViewById(myToolbarId)
-        //如果mainToolbar不为空
-        mainToolbar?.let {
-            //设置该Activity的toolbar为mainToolbar中的toolbar
-            setSupportActionBar(it.toolbar)
-            //进行mainToolbar的ViewModel的绑定
-            it.setViewModel()
+    private var binding : ActivityBleServiceBaseBinding?=null
+    /**
+     * 绑定Service后的回调，使用匿名对象实现 ServiceConnection 接口
+     */
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        //绑定上蓝牙Service的情况处理
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            Log.e("LifeCycle","serviceConnectionBase")
+            val binder = service as LocalBinder
+            bluetoothService = binder.service
+            isBound = true
+            //传递此基类Activity实例到绑定的蓝牙Service
+            bluetoothService!!.setBaseActivity(this@BleServiceBaseActivity)
+            /**
+             *此处setBLEConnectionListener传入的参数为Lambda表达式
+             */
+            bluetoothService?.setBLEConnectionListener { gatt: BluetoothGatt?, isConnected:Boolean ->
+                runOnUiThread {
+                    if (gatt != null) {
+                        Toast.makeText(this@BleServiceBaseActivity, "连接成功", Toast.LENGTH_SHORT).show()
+                        // 更改蓝牙状态，这里依然是更改 mainToolbar 状态，实际上蓝牙连接状态已改变
+                        //由于要获取蓝牙名称，所以把权限请求和toolbar更新放在同一方法中
+                        updateBluetoothStatusToConnected(gatt)
+                    }
+                    else {
+                        if(isConnected){
+                            Toast.makeText(this@BleServiceBaseActivity, "连接丢失", Toast.LENGTH_SHORT).show()
+                        }
+                        else{
+                            Toast.makeText(this@BleServiceBaseActivity, "连接失败", Toast.LENGTH_SHORT).show()
+                        }
+                        MainToolbarViewModel.setBluetoothStatus("未连接", 1)
+                    }
+                }
+            }
+            //由继承此基类Activity的Activity实现此方法
+            onBluetoothServiceConnected()
         }
-    }
 
+        override fun onServiceDisconnected(name: ComponentName) {
+            isBound = false
+        }
+        // 蓝牙设备连接接口方法监听，由 BluetoothService 定义
+    }
     /**
      * onCreate中进行蓝牙Service的绑定
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityBleServiceBaseBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
+        requestLocationPermission()
         Log.e("LifeCycle","onCreateBase")
         bindBluetoothService()
+    }
 
+
+    override fun onResume() {
+        super.onResume()
+        bluetoothService?.setBaseActivity(this@BleServiceBaseActivity)
+        Log.e("LifeCycle","onResumeBase")
+    }
+
+    //Activity销毁时进行Service解绑
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindBluetoothService()
+    }
+    protected fun setContentLayout(binding: ViewBinding) {
+        val container = findViewById<FrameLayout>(R.id.base_container)
+        container.addView(binding.root)
     }
 
     /**
@@ -70,18 +126,6 @@ abstract class BleServiceBaseActivity : AppCompatActivity() {
         )
         bindService(intent, serviceConnection, BIND_AUTO_CREATE)
         startService(intent)
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("LifeCycle","onResumeBase")
-    }
-
-    //Activity销毁时进行Service解绑
-    override fun onDestroy() {
-        super.onDestroy()
-        unbindBluetoothService()
     }
 
     private fun unbindBluetoothService() {
@@ -120,6 +164,18 @@ abstract class BleServiceBaseActivity : AppCompatActivity() {
         }
     }
 
+    private fun requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(
+                    permission.ACCESS_FINE_LOCATION,
+                    permission.ACCESS_COARSE_LOCATION,
+                    permission.ACCESS_BACKGROUND_LOCATION
+                ),
+                101
+            )
+        }
+    }
     /**
      * 该方法在BluetoothService获得此基类Activity的实例后，由BluetoothService调用
      * BluetoothService接收设备蓝牙状态变化，通过此方法通知此基类Activity更新MainToolbar的蓝牙UI状态
@@ -127,7 +183,7 @@ abstract class BleServiceBaseActivity : AppCompatActivity() {
     fun setBluetoothStatus(state: Int) {
         when (state) {
             BluetoothAdapter.STATE_OFF -> {
-                MainToolbarViewModel.setBluetoothStatus(null, 0)
+                MainToolbarViewModel.setBluetoothStatus("", 0)
                 requestEnableBluetooth()
             }
             BluetoothAdapter.STATE_ON -> {
@@ -147,57 +203,7 @@ abstract class BleServiceBaseActivity : AppCompatActivity() {
             .setPositiveButton("好的", null)
             .show()
     }
-    /**
-     * 绑定Service后的回调，使用匿名对象实现 ServiceConnection 接口
-     */
-    private val serviceConnection: ServiceConnection = object : ServiceConnection {
-        //绑定上蓝牙Service的情况处理
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            Log.e("LifeCycle","serviceConnectionBase")
-            val binder = service as LocalBinder
-            bluetoothService = binder.service
-            isBound = true
-            //传递此基类Activity实例到绑定的蓝牙Service
-            bluetoothService!!.setBaseActivity(this@BleServiceBaseActivity)
-            bluetoothService?.setBLEConnectionListener { gatt: BluetoothGatt?, isConnected:Boolean ->
-                runOnUiThread {
-                    if (gatt != null) {
-                        Toast.makeText(
-                            this@BleServiceBaseActivity,
-                            "连接成功",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        // 更改蓝牙状态，这里依然是更改 mainToolbar 状态，实际上蓝牙连接状态已改变
-                        //由于要获取蓝牙名称，所以把权限请求和toolbar更新放在同一方法中
-                        updateBluetoothStatusToConnected(gatt)
-                    } else {
-                        if(isConnected){
-                            Toast.makeText(
-                                this@BleServiceBaseActivity,
-                                "连接丢失",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        else{
-                            Toast.makeText(
-                                this@BleServiceBaseActivity,
-                                "连接失败",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        MainToolbarViewModel.setBluetoothStatus("未连接", 2)
-                    }
-                }
-            }
-            //由继承此基类Activity的Activity实现此方法
-            onBluetoothServiceConnected()
-        }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-            isBound = false
-        }
-        // 蓝牙设备连接接口方法监听，由 BluetoothService 定义
-    }
     /**
      * 先检查权限，权限足够则通过MainToolbarViewModel更新UI状态（先更新UI数据）
      */

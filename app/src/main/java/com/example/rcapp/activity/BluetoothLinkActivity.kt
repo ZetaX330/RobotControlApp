@@ -1,17 +1,12 @@
 package com.example.rcapp.activity
 
-import android.Manifest.permission
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.content.pm.PackageManager
+import android.bluetooth.le.ScanResult
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rcapp.adapter.LeDeviceListAdapter
-import com.example.rcapp.toolbar.MainToolbar
 import com.example.rcapp.databinding.ActivityBluetoothLinkBinding
 import com.example.rcapp.viewmodel.MainToolbarViewModel
 
@@ -22,7 +17,6 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
     private var binding: ActivityBluetoothLinkBinding? = null
     private var leDeviceListAdapter: LeDeviceListAdapter? = null
     private var leDevice: BluetoothDevice? = null
-    private var mainToolbar: MainToolbar? = null
 
     /**
      *BluetoothService蓝牙服务绑定回调，在BleServiceBaseActivity中声明的抽象方法，由继承的Activity具体实现
@@ -40,9 +34,8 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         super.onCreate(savedInstanceState)
         Log.e("LifeCycle", "onCreate")
         binding = ActivityBluetoothLinkBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
-        //初始化toolbar
-        initToolbar()
+        setContentLayout(binding!!)
+        initMainToolbar()
         //初始化蓝牙设备列表adapter
         initListAdapter()
         //初始化列表刷新控件
@@ -64,12 +57,15 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         super.onDestroy()
         Log.e("LifeCycle", "onDestroy")
     }
-
-    private fun initToolbar() {
-        //设置基类Activity的Toolbar
-        initMainToolbar(binding!!.myToolbar.id)
-        //获取Activity的toolbar
-        mainToolbar = binding!!.myToolbar
+    private fun initMainToolbar() {
+        mainBluetoothToolbar = binding?.myToolbar
+        //如果mainToolbar不为空
+        mainBluetoothToolbar?.let {
+            //设置该Activity的toolbar为mainToolbar中的toolbar
+            setSupportActionBar(it.toolbar)
+            //进行mainToolbar的ViewModel的绑定
+            it.setViewModel()
+        }
     }
 
     private fun initListAdapter() {
@@ -101,7 +97,7 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
      */
     private fun refreshDevices() {
         // 停止扫描
-        bluetoothService!!.stopScan()
+        //bluetoothService!!.stopScan()
         // 清空列表
         leDeviceListAdapter!!.clearList()
         // 开启扫描
@@ -115,9 +111,9 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
      */
     private fun setupDeviceListeners() {
         //蓝牙设备发现接口方法监听，接口由 BluetoothService 定义，将查找到的设备加入设备列表
-        bluetoothService?.setDeviceFoundListener { device: BluetoothDevice? ->
-            if (device != null) {
-                leDeviceListAdapter?.addDevice(device)
+        bluetoothService?.setDeviceFoundListener { result: ScanResult? ->
+            if (result != null) {
+                leDeviceListAdapter?.addDevice(result)
             }
         }
     }
@@ -130,7 +126,7 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
     companion object {
         fun bleDeviceConnect(bluetoothLinkActivity: BluetoothLinkActivity, position: Int) {
             //先获取点击的具体设备
-            bluetoothLinkActivity.leDevice = bluetoothLinkActivity.leDeviceListAdapter!!.getItem(position)
+            bluetoothLinkActivity.leDevice = bluetoothLinkActivity.leDeviceListAdapter!!.getItem(position).device
             //更改toolbar状态，正在连接
             MainToolbarViewModel.setBluetoothStatus("连接中", 3)
             //调用BluetoothService的connectToDevice，连接该蓝牙设备

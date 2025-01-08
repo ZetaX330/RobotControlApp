@@ -1,17 +1,17 @@
 package com.example.rcapp.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import com.example.rcapp.fragment.MainFragment
-import com.example.rcapp.toolbar.MainToolbar
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.rcapp.databinding.ActivityMainBinding
+import com.example.rcapp.fragment.RobotMainFragment
 
 class MainActivity : BleServiceBaseActivity() {
-    private var binding: ActivityMainBinding? = null
-    private val mainFragment = MainFragment()
-    private var mainToolbar: MainToolbar? = null
-
+    private lateinit var binding: ActivityMainBinding
+    private val robotMainFragment = RobotMainFragment()
+    private var navController:NavController ? = null
     override fun onBluetoothServiceConnected() {
         //先对本机进行BLE支持检测，如不支持则结束Activity，直接关闭App
         if (!bluetoothService!!.isBluetoothSupported) {
@@ -19,6 +19,7 @@ class MainActivity : BleServiceBaseActivity() {
             finish()
             return
         }
+
         //连上服务后获取一遍蓝牙状态，查看是否开启蓝牙
         //变量或方法后加!!代表为null则抛出空指针错误，加?代表为null则返回
         val state = bluetoothService!!.getBluetoothAdapter()?.state
@@ -31,28 +32,33 @@ class MainActivity : BleServiceBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
-        //initMyToolbar用于设置基类Activity的Toolbar
-        initMainToolbar(binding!!.myToolbar.id)
-        //获取当前自定义toolbar实例
-        mainToolbar = binding!!.myToolbar
-        //替换初始Fragment
-        supportFragmentManager
-            .beginTransaction()
-            .replace(binding!!.MainPageFragment.id, mainFragment)
-            .commit()
-        //对toolbar的蓝牙图标进行长按监听，成功则跳转BluetoothLinkActivity
-        mainToolbar!!.setBluetoothOnLongClickListener {
-            startActivity(
-                Intent(
-                    this@MainActivity,
-                    BluetoothLinkActivity::class.java
-                )
-            )
-            //Lambda 表达式的最后一个表达式就是它的返回值
-            true
-        }
+        //setContentView(binding!!.root)
+        setContentLayout(binding)
+        initMainNav()
     }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+        //初始化MainToolbar
+    private fun initMainNav() {
+        // 初始化 Toolbar
+        binding.myToolbar.let { toolbar ->
+            mainBluetoothToolbar=toolbar
+            setSupportActionBar(toolbar.toolbar) // 设置 Toolbar
+            toolbar.setViewModel()              // 绑定 ViewModel
+        }
+        // 初始化 BottomNavigationView 并绑定 NavController
+        val navHostFragment = supportFragmentManager.findFragmentById(binding.navHostFragment.id) as NavHostFragment
+        val navController = navHostFragment.navController
+        binding.mainBottomNav.setupWithNavController(navController)
+    }
+
+
 
 
     companion object {
