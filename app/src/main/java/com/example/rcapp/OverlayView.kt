@@ -28,6 +28,9 @@ import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * preview上骨架图的绘制，暂时不用关心具体画法
+ */
 class OverlayView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
 

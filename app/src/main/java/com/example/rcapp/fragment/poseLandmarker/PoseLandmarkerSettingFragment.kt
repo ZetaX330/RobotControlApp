@@ -50,13 +50,11 @@ class PoseLandmarkerSettingFragment  : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
     }
-//    fun initPoseLandmarkerHelper(poseLandmarkerHelper: PoseLandmarkerHelper){
-//        this.poseLandmarkerHelper=poseLandmarkerHelper
-//    }
+
+    //收起该fragment
     private fun hideFragment() {
         parentFragment?.let {
             val rootView = view ?: return
-
             rootView.animate()
                 .translationY(-rootView.height.toFloat()) // 向上滑动
                 .setDuration(300) // 动画时长 300ms
@@ -70,12 +68,15 @@ class PoseLandmarkerSettingFragment  : Fragment() {
         }
     }
     private fun initSettingControls() {
+        //点击前往setting的说明页面
         binding.plcSettingQuestionIv.setOnClickListener {
             startActivity(Intent(context,QuestionActivity::class.java))
         }
+        //收起该fragment
         binding.plcSettingCloseIv.setOnClickListener {
             hideFragment()
         }
+        //下面都是参数的调整监听，每次调整完都要更新plm的实际参数
         binding.detectionThresholdMinus.setOnClickListener {
             if (poseLandmarkerHelper.detectionConfidence >= 0.2) {
                 poseLandmarkerHelper.detectionConfidence -= 0.1f
@@ -160,7 +161,7 @@ class PoseLandmarkerSettingFragment  : Fragment() {
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
     }
-
+    //由CameraModelFragment实现接口，用于更新plm的参数
     private fun updatePlmSetting() {
         if(this::poseLandmarkerHelper.isInitialized) {
             poseLandmarkerSettingChangedListener?.onPoseLandmarkerSettingChanged()

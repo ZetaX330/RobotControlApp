@@ -3,6 +3,7 @@ package com.example.rcapp.activity
 import android.Manifest.permission
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothProfile
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -19,11 +20,10 @@ import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
 import com.example.rcapp.R
 import com.example.rcapp.databinding.ActivityBleServiceBaseBinding
-import com.example.rcapp.viewmodel.MainToolbarViewModel
 import com.example.rcapp.service.BluetoothService
 import com.example.rcapp.service.BluetoothService.LocalBinder
 import com.example.rcapp.toolbar.MainBluetoothToolbar
-
+import com.example.rcapp.viewmodel.MainToolbarViewModel
 /**
  *绑定该基类的Activity，执行时生命周期如下
  *onCreate（基类） -> onCreate -> onResume（基类） -> onResume -> serviceConnection
@@ -36,7 +36,7 @@ import com.example.rcapp.toolbar.MainBluetoothToolbar
 abstract class BleServiceBaseActivity: AppCompatActivity() {
     var bluetoothService: BluetoothService? = null
     var mainBluetoothToolbar: MainBluetoothToolbar? = null
-
+    private val connectFailed : Int = 4
     private var isBound = false
     //创建一个抽象方法，用于绑定蓝牙Service后ServiceConnection回调中不同Activity的处理
     protected abstract fun onBluetoothServiceConnected()
@@ -53,28 +53,6 @@ abstract class BleServiceBaseActivity: AppCompatActivity() {
             isBound = true
             //传递此基类Activity实例到绑定的蓝牙Service
             bluetoothService!!.setBaseActivity(this@BleServiceBaseActivity)
-            /**
-             *此处setBLEConnectionListener传入的参数为Lambda表达式
-             */
-            bluetoothService?.setBLEConnectionListener { gatt: BluetoothGatt?, isConnected:Boolean ->
-                runOnUiThread {
-                    if (gatt != null) {
-                        Toast.makeText(this@BleServiceBaseActivity, "连接成功", Toast.LENGTH_SHORT).show()
-                        // 更改蓝牙状态，这里依然是更改 mainToolbar 状态，实际上蓝牙连接状态已改变
-                        //由于要获取蓝牙名称，所以把权限请求和toolbar更新放在同一方法中
-                        updateBluetoothStatusToConnected(gatt)
-                    }
-                    else {
-                        if(isConnected){
-                            Toast.makeText(this@BleServiceBaseActivity, "连接丢失", Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            Toast.makeText(this@BleServiceBaseActivity, "连接失败", Toast.LENGTH_SHORT).show()
-                        }
-                        MainToolbarViewModel.setBluetoothStatus("未连接", 1)
-                    }
-                }
-            }
             //由继承此基类Activity的Activity实现此方法
             onBluetoothServiceConnected()
         }
@@ -178,17 +156,46 @@ abstract class BleServiceBaseActivity: AppCompatActivity() {
     }
     /**
      * 该方法在BluetoothService获得此基类Activity的实例后，由BluetoothService调用
-     * BluetoothService接收设备蓝牙状态变化，通过此方法通知此基类Activity更新MainToolbar的蓝牙UI状态
+     * BluetoothService接收设备蓝牙状态变化，通过此方法通知此基类Activity更新MainToolbar的蓝牙UI状态并发送Toast
      */
-    fun setBluetoothStatus(state: Int) {
-        when (state) {
-            BluetoothAdapter.STATE_OFF -> {
-                MainToolbarViewModel.setBluetoothStatus("", 0)
-                requestEnableBluetooth()
-            }
-            BluetoothAdapter.STATE_ON -> {
-                MainToolbarViewModel.setBluetoothStatus("未连接", 1)
-                Toast.makeText(this, "蓝牙已开启", Toast.LENGTH_SHORT).show()
+    fun updateBluetoothUI(state: Int,gatt: BluetoothGatt?) {
+        runOnUiThread {
+            when (state) {
+                //蓝牙关闭时
+                BluetoothAdapter.STATE_OFF -> {
+                    MainToolbarViewModel.setBluetoothStatus(null, 0)
+                    requestEnableBluetooth()
+                }
+                //蓝牙开启时
+                BluetoothAdapter.STATE_ON -> {
+                    MainToolbarViewModel.setBluetoothStatus(null, 1)
+                    Toast.makeText(this, "蓝牙已开启", Toast.LENGTH_SHORT).show()
+                }
+                //蓝牙连上时
+                BluetoothProfile.STATE_CONNECTED ->{
+                    if (ActivityCompat.checkSelfPermission(
+                            this,
+                            permission.BLUETOOTH_CONNECT
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        requestPermission(permission.BLUETOOTH_CONNECT)
+                        return@runOnUiThread
+                    }
+                    MainToolbarViewModel.setBluetoothStatus(gatt!!.device.name, 2)
+                    Toast.makeText(this, "连接成功", Toast.LENGTH_SHORT).show()
+                }
+                //蓝牙断连时
+                BluetoothProfile.STATE_DISCONNECTED ->{
+                    MainToolbarViewModel.setBluetoothStatus(null, 1)
+                    Toast.makeText(this, "连接丢失", Toast.LENGTH_SHORT).show()
+                }
+                //连接失败时
+                connectFailed->{
+                    MainToolbarViewModel.setBluetoothStatus(null, 1)
+                    Toast.makeText(this, "连接失败", Toast.LENGTH_SHORT).show()
+                }
+
+
             }
         }
     }
@@ -207,18 +214,5 @@ abstract class BleServiceBaseActivity: AppCompatActivity() {
     /**
      * 先检查权限，权限足够则通过MainToolbarViewModel更新UI状态（先更新UI数据）
      */
-    private fun updateBluetoothStatusToConnected(gatt: BluetoothGatt) {
-        //权限检查与请求
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermission(permission.BLUETOOTH_CONNECT)
-        } else {
-            //权限足够，则更改连接设备名和蓝牙状态
-            MainToolbarViewModel.setBluetoothStatus(gatt.device.name, 2)
-        }
-    }
 
 }

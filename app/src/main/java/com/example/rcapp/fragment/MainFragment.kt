@@ -19,6 +19,9 @@ import com.example.rcapp.model.InstructionSend
 import java.time.LocalTime
 import java.util.UUID
 
+/**
+ * 暂时不用该fragment
+ */
 class MainFragment : Fragment() {
     private var binding: FragmentMainBinding? = null
     private var bluetoothService: BluetoothService? = null

@@ -10,8 +10,6 @@ import com.example.rcapp.fragment.RobotMainFragment
 
 class MainActivity : BleServiceBaseActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val robotMainFragment = RobotMainFragment()
-    private var navController:NavController ? = null
     override fun onBluetoothServiceConnected() {
         //先对本机进行BLE支持检测，如不支持则结束Activity，直接关闭App
         if (!bluetoothService!!.isBluetoothSupported) {
@@ -25,7 +23,7 @@ class MainActivity : BleServiceBaseActivity() {
         val state = bluetoothService!!.getBluetoothAdapter()?.state
         //执行setBluetoothState，如果蓝牙开启，修改toolbar蓝牙图标为选中状态，否则设为未选中，然后提醒用户打开蓝牙
         if (state != null) {
-            setBluetoothStatus(state)
+            updateBluetoothUI(state,null)
         }
     }
 
@@ -44,15 +42,19 @@ class MainActivity : BleServiceBaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
     }
-        //初始化MainToolbar
+        //初始化 MainToolbar
     private fun initMainNav() {
         // 初始化 Toolbar
         binding.myToolbar.let { toolbar ->
             mainBluetoothToolbar=toolbar
-            setSupportActionBar(toolbar.toolbar) // 设置 Toolbar
-            toolbar.setViewModel()              // 绑定 ViewModel
+            // 设置 Toolbar
+            setSupportActionBar(toolbar.toolbar)
+            // 绑定 ViewModel
+            toolbar.setViewModel()
         }
         // 初始化 BottomNavigationView 并绑定 NavController
+        // 注意！当navHostFragment的容器为 FragmentContainerView时，navController的获取有所不同，即当前使用的方法
+        // 需要先获取navHostFragment的实例，通过navHostFragment实例获取navController
         val navHostFragment = supportFragmentManager.findFragmentById(binding.navHostFragment.id) as NavHostFragment
         val navController = navHostFragment.navController
         binding.mainBottomNav.setupWithNavController(navController)

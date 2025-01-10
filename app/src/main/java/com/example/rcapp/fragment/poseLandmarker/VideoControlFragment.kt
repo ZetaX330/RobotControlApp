@@ -44,7 +44,6 @@ class VideoControlFragment : Fragment() {
         binding.videoModelSelectIv.setOnClickListener {
             openVideoLauncher.launch(arrayOf("video/*"))
         }
-        // Inflate the layout for this fragment
         return binding.root
     }
     private fun sendVideoUri(uri: Uri) {

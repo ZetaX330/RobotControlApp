@@ -7,6 +7,9 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rcapp.R
 
+/**
+ * 主页展示机器人照片的vp2，只有自动轮播照片的功能
+ */
 class RobotMainVp2Adapter (private val images: List<Int>) : RecyclerView.Adapter<RobotMainVp2Adapter.ImageViewHolder>() {
 
     inner class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

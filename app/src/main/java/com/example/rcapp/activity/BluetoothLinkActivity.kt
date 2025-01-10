@@ -1,32 +1,58 @@
 package com.example.rcapp.activity
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
 import android.bluetooth.le.ScanResult
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.rcapp.adapter.LeDeviceListAdapter
+import com.example.rcapp.adapter.ScanDeviceListAdapter
 import com.example.rcapp.databinding.ActivityBluetoothLinkBinding
+import com.example.rcapp.fragment.BluetoothDeviceFragment
 import com.example.rcapp.viewmodel.MainToolbarViewModel
-
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
 class BluetoothLinkActivity : BleServiceBaseActivity() {
-    private var binding: ActivityBluetoothLinkBinding? = null
-    private var leDeviceListAdapter: LeDeviceListAdapter? = null
-    private var leDevice: BluetoothDevice? = null
+    private lateinit var binding: ActivityBluetoothLinkBinding
+    private var scanDeviceListAdapter: ScanDeviceListAdapter? = null
+    private var willConnectDevice: BluetoothDevice? = null
 
     /**
      *BluetoothService蓝牙服务绑定回调，在BleServiceBaseActivity中声明的抽象方法，由继承的Activity具体实现
      */
     override fun onBluetoothServiceConnected() {
         //设置蓝牙设备扫描结果监听
-        setupDeviceListeners()
+        setDeviceScanListener()
         if (bluetoothService?.getBluetoothAdapter()?.isEnabled == true) {
             //先进行一次蓝牙设备扫描
             bluetoothService!!.startScan()
+        }
+        if (bluetoothService?.getBluetoothGatt() !=null){
+            setDeviceConnected(bluetoothService?.getBluetoothGatt()!!.device)
+        }
+        /**
+         *此处setBLEConnectionListener传入的参数为Lambda表达式
+         */
+        bluetoothService?.setBLEConnectionListener {gatt: BluetoothGatt?->
+            runOnUiThread {
+                if(gatt!=null){
+                    //更新UI为连接上的设备
+                    setDeviceConnected(gatt.device)
+                }
+                else{
+                    binding.bluetoothConnected.visibility=View.GONE
+                }
+            }
         }
     }
 
@@ -34,12 +60,13 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         super.onCreate(savedInstanceState)
         Log.e("LifeCycle", "onCreate")
         binding = ActivityBluetoothLinkBinding.inflate(layoutInflater)
-        setContentLayout(binding!!)
+        setContentLayout(binding)
         initMainToolbar()
         //初始化蓝牙设备列表adapter
         initListAdapter()
         //初始化列表刷新控件
         initSwipeRefresh()
+        setDeviceConnectedListener()
     }
 
     /**
@@ -58,7 +85,7 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         Log.e("LifeCycle", "onDestroy")
     }
     private fun initMainToolbar() {
-        mainBluetoothToolbar = binding?.myToolbar
+        mainBluetoothToolbar = binding.myToolbar
         //如果mainToolbar不为空
         mainBluetoothToolbar?.let {
             //设置该Activity的toolbar为mainToolbar中的toolbar
@@ -70,25 +97,26 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
 
     private fun initListAdapter() {
         //初始化蓝牙列表adapter，参数为context和表项layout
-        leDeviceListAdapter = LeDeviceListAdapter(this)
+        scanDeviceListAdapter = ScanDeviceListAdapter(this)
         //设置列表视图的adapter
-        binding!!.bluetoothLv.adapter = leDeviceListAdapter
+        binding.bluetoothScanRv.adapter = scanDeviceListAdapter
         //将RecyclerView设置为使用线性布局管理器，以垂直列表的方式显示数据项
-        binding!!.bluetoothLv.layoutManager = LinearLayoutManager(this)
+        binding.bluetoothScanRv.layoutManager = LinearLayoutManager(this)
+        binding.bluetoothScanRv.itemAnimator = DefaultItemAnimator()
     }
 
     /**
      * 下拉刷新列表监听
      */
     private fun initSwipeRefresh() {
-        binding!!.bluetoothRefreshSrl.setOnRefreshListener {
+        binding.bluetoothRefreshSrl.setOnRefreshListener {
             // 使用Kotlin协程在主线程上延迟执行任务
             lifecycleScope.launch {
                 // 延迟500毫秒
                 delay(500)
                 // 调用refreshDevices
                 refreshDevices()
-                binding!!.bluetoothRefreshSrl.isRefreshing = false // 停止刷新动画
+                binding.bluetoothRefreshSrl.isRefreshing = false // 停止刷新动画
             }
         }
     }
@@ -96,26 +124,55 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
      * 刷新蓝牙列表
      */
     private fun refreshDevices() {
-        // 停止扫描
-        //bluetoothService!!.stopScan()
         // 清空列表
-        leDeviceListAdapter!!.clearList()
+        scanDeviceListAdapter!!.clearList()
         // 开启扫描
         bluetoothService!!.startScan()
         // 停止刷新动画
-        binding!!.bluetoothRefreshSrl.isRefreshing = false
+        binding.bluetoothRefreshSrl.isRefreshing = false
     }
 
     /**
      * 蓝牙设备相关监听方法
      */
-    private fun setupDeviceListeners() {
+    private fun setDeviceScanListener() {
         //蓝牙设备发现接口方法监听，接口由 BluetoothService 定义，将查找到的设备加入设备列表
         bluetoothService?.setDeviceFoundListener { result: ScanResult? ->
             if (result != null) {
-                leDeviceListAdapter?.addDevice(result)
+                scanDeviceListAdapter?.addDevice(result)
             }
         }
+    }
+
+    /**
+     * 连接设备点击事件监听
+     */
+    private fun setDeviceConnectedListener() {
+        binding.bluetoothConnected.setOnClickListener {
+            val dialog = BluetoothDeviceFragment()
+            dialog.show(supportFragmentManager, "BluetoothDeviceFragment")
+        }
+        binding.bluetoothMoreIv.setOnClickListener {
+            //
+        }
+    }
+    /**
+     * 蓝牙设备相关监听方法
+     */
+    private fun setDeviceConnected(device: BluetoothDevice) {
+        //蓝牙设备发现接口方法监听，接口由 BluetoothService 定义，将查找到的设备加入设备列表
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        binding.bluetoothConnectedNameTv.text=device.name
+        Log.i("device name",device.name)
+        binding.bluetoothConnectedAddressTv.text=device.address
+        binding.bluetoothConnectedStatusTv.text="已连接"
+        binding.bluetoothConnected.visibility=View.VISIBLE
     }
 
     /**
@@ -126,13 +183,13 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
     companion object {
         fun bleDeviceConnect(bluetoothLinkActivity: BluetoothLinkActivity, position: Int) {
             //先获取点击的具体设备
-            bluetoothLinkActivity.leDevice = bluetoothLinkActivity.leDeviceListAdapter!!.getItem(position).device
+            bluetoothLinkActivity.willConnectDevice = bluetoothLinkActivity.scanDeviceListAdapter!!.getItem(position).device
             //更改toolbar状态，正在连接
             MainToolbarViewModel.setBluetoothStatus("连接中", 3)
             //调用BluetoothService的connectToDevice，连接该蓝牙设备
             //该方法有最终有一个回调分支方法onConnectionStateChange，同时此Activity实现了BluetoothService的onBLEStatusInform
             //BLEConnectionListener在onConnectionStateChang执行onBLEStatusInform，回传连接结果
-            bluetoothLinkActivity.bluetoothService!!.connectToDevice(bluetoothLinkActivity.leDevice)
+            bluetoothLinkActivity.bluetoothService!!.connectToDevice(bluetoothLinkActivity.willConnectDevice)
         }
     }
 }

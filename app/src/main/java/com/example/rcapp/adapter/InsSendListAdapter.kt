@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rcapp.databinding.InsSendItemLayoutBinding
 import com.example.rcapp.model.InstructionSend
 
+/**
+ * 此adapter暂时不使用，请忽略
+ */
 class InsSendListAdapter(private val context: Context?) :
     RecyclerView.Adapter<InsSendListAdapter.ViewHolder>() {
     private val insSendList: MutableList<InstructionSend> =

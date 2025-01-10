@@ -30,6 +30,10 @@
         android:theme="@style/Theme.RCApp"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.LoginActivity"
+            android:exported="false">
+        </activity>
+        <activity
             android:name=".activity.QuestionActivity"
             android:exported="false" />
         <activity

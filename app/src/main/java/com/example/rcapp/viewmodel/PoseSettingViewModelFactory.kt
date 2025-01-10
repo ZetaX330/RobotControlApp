@@ -3,6 +3,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.rcapp.model.PoseLandmarkerHelper
 import com.example.rcapp.viewmodel.PoseSettingViewModel
 
+/**
+ * 构造方法，用于创建能够传递poseLandmarkerHelper实例的ViewModel
+ */
 class PoseSettingViewModelFactory(
     private val model: PoseLandmarkerHelper
 ) : ViewModelProvider.Factory {

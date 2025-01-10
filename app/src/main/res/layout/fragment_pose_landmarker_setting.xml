@@ -22,7 +22,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="5dp"
-                android:src="@drawable/ic_close"/>
+                android:src="@drawable/ic_plm_setting_close"/>
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

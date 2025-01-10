@@ -1,10 +1,16 @@
 <resources>
     <string name="app_name">RCApp</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="蓝牙">蓝牙</string>
     <string name="蓝牙设备名">蓝牙设备名</string>
     <string name="连接">连接</string>
+    <string name="蓝牙管理">蓝牙管理</string>
+    <string name="设备名称">设备名称</string>
+    <string name="设备地址">74:A5:8C:1A:43:73</string>
+    <string name="信号强度">-54 dBm</string>
+    <string name="已连接设备">已连接设备</string>
+    <string name="已连接">已连接</string>
+
     <string name="相机">相机</string>
     <string name="发送测试数据">发送测试数据</string>
     <string name="指令发送时间">14:43:55</string>
@@ -12,16 +18,9 @@
     <string name="发送">发送</string>
     <string name="摄像">摄像</string>
     <string name="摄像模拟">摄像模拟</string>
-    <string name="蓝牙管理">蓝牙管理</string>
     <string name="拍照">拍照</string>
-    <string name="归正">归正</string>
-    <string name="角度">角度:</string>
-    <string name="角度示例">175.34°</string>
-    <string name="设备名称">设备名称</string>
-    <string name="设备地址">74:A5:8C:1A:43:73</string>
-    <string name="信号强度">-54 dBm</string>
+
     <string name="title_activity_ble_service_base">BleServiceBaseActivity</string>
-    <string name="已连接设备">已连接设备</string>
 
 
     <string name="media_pipe">MediaPipe</string>

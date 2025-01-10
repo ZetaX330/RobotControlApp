@@ -25,6 +25,7 @@ class PoseLandmarkerActivity  : BleServiceBaseActivity() {
         val adapter = RunningModelVp2Adapter(this)
         binding.runningModelVp2.adapter = adapter
 
+        //绑定TabLayout与下方切换的ViewPaper2
         TabLayoutMediator(binding.runningModelTl, binding.runningModelVp2) { tab, position ->
             tab.text = when (position) {
                 0 -> "摄像"

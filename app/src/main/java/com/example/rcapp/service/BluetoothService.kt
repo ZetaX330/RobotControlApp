@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothStatusCodes
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
@@ -41,18 +40,18 @@ class BluetoothService : Service() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothLeScanner: BluetoothLeScanner? = null
     private var bluetoothGatt: BluetoothGatt? = null
-    private var serviceStatus: Boolean = false
     private var connectionJob: Job? = null
     private var scanJob: Job? = null
-
     private var isConnected = false
+    private val connectFailed : Int = 4
+
     fun getBluetoothAdapter(): BluetoothAdapter? {
         return bluetoothAdapter
     }
-    fun getServiceStatus(): Boolean {
-        return serviceStatus
+    fun getBluetoothGatt(): BluetoothGatt? {
+        return bluetoothGatt
     }
-    //返回设备蓝牙服务是否可用
+
     private var scanning = false
     private var bleServiceBaseActivity: BleServiceBaseActivity? = null
     private var deviceFoundListener: DeviceFoundListener? = null
@@ -64,9 +63,11 @@ class BluetoothService : Service() {
     }
 
     //设备连接回调，传给BluetoothLinkActivity连接结果
+    //功能是更新BluetoothLinkActivity的已连接设备页面UI
     fun interface BLEConnectionListener {
-        fun onBLEConnection(gatt: BluetoothGatt?,isConnected: Boolean)
+        fun onBLEConnection(gatt: BluetoothGatt?)
     }
+
     /**
      * 下面设置接口的方法都将接口示例当作参数
      * 如果使用Lambda表达式作为参数则应写为
@@ -105,13 +106,14 @@ class BluetoothService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         //停止扫描
-        //stopScan()
+        stopScan()
         //停止设备蓝牙状态广播接收
         unregisterReceiver(bluetoothReceiver)
         //关闭与设备的连接
         closeGatt()
     }
 
+    //关闭设备的gatt
     private fun closeGatt() {
         if (bluetoothGatt != null) {
             //检查权限
@@ -167,11 +169,6 @@ class BluetoothService : Service() {
             if (BluetoothAdapter.ACTION_STATE_CHANGED == intent.action) {
                 //获得广播中BluetoothAdapter.EXTRA_STATE的值，即设备的蓝牙状态，默认为BluetoothAdapter.ERROR
                 val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
-                if (state == BluetoothAdapter.STATE_ON) {
-                    initBluetooth()
-                    bleServiceBaseActivity!!.setBluetoothStatus(state)
-
-                }
                 if (bleServiceBaseActivity != null) {
                     //更新BleServiceBaseActivity中蓝牙状态，实际上最终改变的是toolbar状态，以及相应状态的处理（比如弹出提醒框）
                     if(state==BluetoothAdapter.STATE_OFF){
@@ -180,19 +177,28 @@ class BluetoothService : Service() {
                             Log.e(TAG, "No Permission")
                             return
                         }
-                        bluetoothGatt?.close()
-                        bleServiceBaseActivity!!.setBluetoothStatus(state)
-
+                        //取消扫描超时处理任务
+                        scanJob?.cancel()
+                        //关闭Gatt
+                        closeGatt()
+                        //传递null，更新已连接设备UI
+                        bleConnectionListener?.onBLEConnection(null)
                     }
                 }
+                //更新toolbarUI和发送Toast
+                bleServiceBaseActivity!!.updateBluetoothUI(state, bluetoothGatt)
             }
         }
     }
 
     //开始扫描蓝牙设备
     fun startScan() {
-        //检查bluetoothLeScanner是否为null，直接结束上次扫描
+        //确保bluetoothLeScanner不为null,为null则初始化scanner
+        bluetoothLeScanner = bluetoothLeScanner ?: bluetoothAdapter?.bluetoothLeScanner
+        //直接结束上次扫描
         stopScan()
+        //取消连接超时任务
+        connectionJob?.cancel()
         if (!checkPermission(permission.BLUETOOTH_SCAN)) {
             requestPermission(permission.BLUETOOTH_SCAN)
             return
@@ -206,6 +212,7 @@ class BluetoothService : Service() {
         if(!scanning){
             scanning = true
             bluetoothLeScanner!!.startScan(null, scanSettings, leScanCallback)
+            //一个定时任务，扫描最多持续10秒，十秒后停止扫描
             scanJob = CoroutineScope(Dispatchers.Main).launch {
                 delay(10000)
                 stopScan()
@@ -269,12 +276,15 @@ class BluetoothService : Service() {
         //device.connectGatt最终返回一个BluetoothGatt对象
         //第一个参数Context只做连接用，不影响连接完成后的BluetoothGatt，所以使用基类Activity作为参数
         bluetoothGatt = device.connectGatt(bleServiceBaseActivity, true, gattCallback)
+        //连接持续时间最多为5秒，5秒内未连接成功则连接失败
         connectionJob = CoroutineScope(Dispatchers.Main).launch {
-            delay(5000) // 设置超时时间为5秒
+            delay(5000)
             if (!isConnected) {
                 bluetoothGatt?.close()
-                isConnected=false;
-                bleConnectionListener?.onBLEConnection(null,false)
+                isConnected=false
+                //超时后若未连接上，更新toolbarUI并发生toast
+                bleServiceBaseActivity?.updateBluetoothUI(connectFailed,bluetoothGatt)
+                closeGatt()
             }
         }
         //Log.d(TAG, "Connecting to device: " + device.address)
@@ -283,31 +293,31 @@ class BluetoothService : Service() {
     //连接设备Gatt结果回调
     private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-            connectionJob?.cancel()
-            if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
+            //无论状态如何，直接更新UI
+            bleServiceBaseActivity?.updateBluetoothUI(newState,gatt)
+            //如果连接成功
+            if (status == BluetoothGatt.GATT_SUCCESS&&newState == BluetoothGatt.STATE_CONNECTED) {
+                //连接成功后取消连接超时任务
+                connectionJob?.cancel()
                 isConnected = true
-            }
-            handleConnectionStateChange(gatt, newState)
-
-        }
-
-
-    //连接状态传递
-        private fun handleConnectionStateChange(gatt: BluetoothGatt, newState: Int) {
-            if (!checkPermission(permission.BLUETOOTH_CONNECT)) {
-                requestPermission(permission.BLUETOOTH_CONNECT)
-                return
-            }
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.d(TAG, "Connected to GATT server.")
-                bleConnectionListener?.onBLEConnection(gatt,isConnected)
+                bleConnectionListener?.onBLEConnection(gatt)
+                if (bleServiceBaseActivity?.let {
+                        ActivityCompat.checkSelfPermission(
+                            it,
+                            permission.BLUETOOTH_CONNECT
+                        )
+                    } != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermission(permission.BLUETOOTH_CONNECT)
+                    return
+                }
+                //查找蓝牙服务
                 bluetoothGatt?.discoverServices()
             }
-            else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Log.d(TAG, "Disconnected from GATT server.")
-                bleConnectionListener?.onBLEConnection(null,isConnected)
-                closeGatt()
-            }
+//            //如果连接失败
+//            if(newState==BluetoothGatt.STATE_DISCONNECTED){
+//                bleConnectionListener?.onBLEConnection(null)
+//            }
         }
 
         //对应bluetoothGatt.discoverServices()的回调结果
@@ -324,6 +334,9 @@ class BluetoothService : Service() {
         }
     }
 
+    /**
+     * 对蓝牙设备的操作需要对应设备的特征值，写入操作则需要写入特征值，可以传入特征码来查找特征值
+     */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun writeData(characteristicUUID: UUID, data: ByteArray) {
         if (bluetoothGatt == null) {
@@ -336,12 +349,13 @@ class BluetoothService : Service() {
             Log.e(TAG, "No Permission")
             return
         }
-        val characteristic = findCharacteristic(characteristicUUID)
         //查找对应特征值
+        val characteristic = findCharacteristic(characteristicUUID)
         if (characteristic == null) {
             Log.e(TAG, "Characteristic not found")
             return
         }
+        //写入数据
         try {
             val writeStatus = bluetoothGatt!!.writeCharacteristic(
                 characteristic,
@@ -363,6 +377,9 @@ class BluetoothService : Service() {
         }
     }
 
+    /**
+     * 该方法会在连接上的设备的服务中查找传递来的特征码，如果某服务的特征值的特征码与之匹配，则返回该特征值
+     */
     private fun findCharacteristic(uuid: UUID): BluetoothGattCharacteristic? {
         for (service in bluetoothGatt!!.services) {
             for (characteristic in service.characteristics) {

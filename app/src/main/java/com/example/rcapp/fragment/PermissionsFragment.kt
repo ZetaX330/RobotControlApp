@@ -27,6 +27,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.example.rcapp.R
 
+/**
+ * 暂时不用该fragment
+ */
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
 class PermissionsFragment : Fragment() {

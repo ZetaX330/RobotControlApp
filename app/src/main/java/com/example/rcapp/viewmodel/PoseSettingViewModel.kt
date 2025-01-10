@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import com.example.rcapp.model.PoseLandmarkerHelper
 import java.util.Locale
 
+/**
+ * 对应plmHelper中五个参数
+ */
 class PoseSettingViewModel(private val poseLandmarkerHelper: PoseLandmarkerHelper) : ViewModel() {
     private val _model = MutableLiveData(PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_FULL)
     private val _delegate = MutableLiveData(PoseLandmarkerHelper.DELEGATE_CPU)

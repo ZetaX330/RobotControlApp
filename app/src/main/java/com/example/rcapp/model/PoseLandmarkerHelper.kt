@@ -32,6 +32,9 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 
+/**
+ * 暂时只用看detectLiveStream一种识别模式的代码
+ */
 class PoseLandmarkerHelper(
     /**
      * 姿态识别，姿态跟踪，节点识别三个参数的门槛初始化为0.5

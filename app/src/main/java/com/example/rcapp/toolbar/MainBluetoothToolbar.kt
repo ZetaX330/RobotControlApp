@@ -121,7 +121,7 @@ class MainBluetoothToolbar @JvmOverloads constructor(
     private fun showDisconnectedStatus() {
         hideLoadingAnimation()
         binding.bluetoothManageIv.isSelected = true
-        expandDeviceName()
+        dropDeviceName()
     }
     //蓝牙开启已连接设置图标为选中，图标呈现蓝色，设备名为已连接的设备的名
     private fun showConnectedStatus() {

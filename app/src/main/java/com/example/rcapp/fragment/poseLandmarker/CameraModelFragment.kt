@@ -18,6 +18,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.rcapp.R
@@ -29,7 +30,13 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * 注意！暂时未动态申请相机权限
+ * 三种识别模式下，每种模式分别有一个Control Fragment和一个Model Fragment
+ * Control负责更新ViewModel实现控制功能，Model通过观察ViewModel更新UI
+ */
 class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener {
     private lateinit var binding: FragmentCameraModelBinding
     private lateinit var poseSettingViewModel: PoseSettingViewModel
@@ -44,6 +51,7 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
     private var cameraProvider: ProcessCameraProvider? = null
     private var cameraFacing = CameraSelector.LENS_FACING_BACK
     private lateinit var backgroundExecutor: ExecutorService
+    private var isDetectPose = AtomicBoolean(false)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,17 +64,23 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCameraModelBinding.inflate(layoutInflater)
-
+        //获得PoseCameraViewModel，由于要和CameraControlFragment交互，通过父Activity获取ViewModel
         poseCameraViewModel=ViewModelProvider(requireActivity())[PoseCameraViewModel::class.java]
+        //观察相机状态的改变
         poseCameraViewModel.isCameraOn.observe(viewLifecycleOwner) { isCameraOn ->
             when(isCameraOn){
                 false -> {
-                    unbindImageAnalyzer()
+                    binding.overlay.visibility=View.GONE
+                    //相机关闭时，停止检测
+                    isDetectPose.set(false)
+                    //停止相机计时器，重置计时
                     binding.cameraTimeChr.stop()
                     binding.cameraTimeChr.base = SystemClock.elapsedRealtime()
+
                 }
                 true -> {
-                    bindImageAnalyzer()
+                    binding.overlay.visibility=View.VISIBLE
+                    isDetectPose.set(true)
                     binding.cameraTimeChr.start()
                 }
             }
@@ -78,22 +92,24 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
         super.onViewCreated(view, savedInstanceState)
         backgroundExecutor = Executors.newSingleThreadExecutor()
 
-        // Wait for the views to be properly laid out
+        //post确定cameraPreview设置好后进行setUpCamera
         binding.cameraPreview.post {
-            // Set up the camera and its use cases
             setUpCamera()
-            createImageAnalyzer()
         }
 
-        // Create the PoseLandmarkerHelper that will handle the inference
+        //在后台线程创建该模式下对应poseLandmarkerHelper实例
         backgroundExecutor.execute {
             poseLandmarkerHelper = PoseLandmarkerHelper(
+                //识别模型默认为FULL
                 currentModel = PoseLandmarkerHelper.MODEL_POSE_LANDMARKER_FULL,
+                //委托模式默认为CPU
                 currentDelegate = PoseLandmarkerHelper.DELEGATE_CPU,
+                //相机模式下为LIVE_STREAM
                 runningMode = RunningMode.LIVE_STREAM,
                 context = requireContext(),
                 poseLandmarkerHelperListener = this
             )
+            //将poseLandmarkerHelper实例当作参数传递给poseSettingViewModel
             val factory = PoseSettingViewModelFactory(poseLandmarkerHelper)
             poseSettingViewModel = ViewModelProvider(this, factory)[PoseSettingViewModel::class.java]
         }
@@ -102,6 +118,7 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
 
     override fun onResume() {
         super.onResume()
+        //poseLandmarkerSettingFragment的呼出监听
         binding.plcSettingIv.setOnClickListener {
             showFragment()
         }
@@ -110,80 +127,42 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
     override fun onPause() {
         super.onPause()
         if(this::poseLandmarkerHelper.isInitialized) {
+            //暂时不清楚为什么要重新设置一遍参数
             poseSettingViewModel.setDetectionConfidence(poseLandmarkerHelper.detectionConfidence)
             poseSettingViewModel.setTrackingConfidence(poseLandmarkerHelper.trackingConfidence)
             poseSettingViewModel.setPresenceConfidence(poseLandmarkerHelper.presenceConfidence)
             poseSettingViewModel.setDelegate(poseLandmarkerHelper.currentDelegate)
 
-            // Close the PoseLandmarkerHelper and release resources
             backgroundExecutor.execute { poseLandmarkerHelper.clearPoseLandmarker() }
         }
     }
     override fun onDestroy() {
         super.onDestroy()
+        //关闭后台线程
         backgroundExecutor.shutdown()
+        //确保后台任务全部完成
         backgroundExecutor.awaitTermination(
             Long.MAX_VALUE, TimeUnit.NANOSECONDS
         )
     }
 
-    // Initialize CameraX, and prepare to bind the camera use cases
     private fun setUpCamera() {
         val cameraProviderFuture =
             ProcessCameraProvider.getInstance(requireContext())
         // 异步获取cameraProvider
         cameraProviderFuture.addListener(
             {
-                // CameraProvider
                 cameraProvider = cameraProviderFuture.get()
 
-                // Build and bind the camera use cases
                 bindCameraUseCases()
             }, ContextCompat.getMainExecutor(requireContext())
             // 获取主线程的执行器，确保摄像头操作在主线程上执行
         )
     }
 
-    private fun createImageAnalyzer() {
-    imageAnalyzer =
-        ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setTargetRotation(binding.cameraPreview.display.rotation)
-            //设置背压策略为 "仅保留最新帧"
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-            .build()
-            // The analyzer can then be assigned to the instance
-            .also {
-                //设置分析器，指定在后台线程（backgroundExecutor）上运行
-                it.setAnalyzer(backgroundExecutor) { image ->
-                    //检测姿态
-                    detectPose(image)
-                }
-            }
-    }
-    private fun bindImageAnalyzer() {
-        val cameraProvider = cameraProvider
-            ?: throw IllegalStateException("Camera initialization failed.")
-
-        try {
-            cameraProvider.bindToLifecycle(
-                this, CameraSelector.DEFAULT_BACK_CAMERA, imageAnalyzer
-            )
-        } catch (exc: Exception) {
-            Log.e(TAG, "ImageAnalyzer binding failed", exc)
-        }
-    }
-    private fun unbindImageAnalyzer() {
-        val cameraProvider = cameraProvider
-            ?: throw IllegalStateException("Camera initialization failed.")
-
-        cameraProvider.unbind(imageAnalyzer)
-    }
-    // Declare and bind preview, capture and analysis use cases
     @SuppressLint("UnsafeOptInUsageError")
     private fun bindCameraUseCases() {
 
-        // CameraProvider
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
 
@@ -191,26 +170,41 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
         val cameraSelector =
             CameraSelector.Builder().requireLensFacing(cameraFacing).build()
 
-        // Preview. Only using the 4:3 ratio because this is the closest to our models
         // 预览视图设置
-        preview = Preview.Builder().setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            //设置目标宽高比为 4:3
+        preview = Preview.Builder().
+            //设置目标宽高比为 4:3，该方法已弃用，暂时未找到替换方法
+            setTargetAspectRatio(AspectRatio.RATIO_4_3)
             //设置目标旋转角度，与设备显示器的旋转方向一致
             .setTargetRotation(binding.cameraPreview.display.rotation)
             .build()
-
+        val imageAnalyzer = ImageAnalysis.Builder()
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            .setTargetRotation(binding.cameraPreview.display.rotation)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            .build()
+            .also {
+                it.setAnalyzer(backgroundExecutor) { image ->
+                    image.use { image ->
+                        if (isDetectPose.get()) {
+                            Log.d("ImageAnalyzer", "Detecting pose")
+                            detectPose(image)
+                        } else {
+                            Log.d("ImageAnalyzer", "No Detecting pose")
+                        }
+                    }
+                }
+            }
         //解绑相机先前用例
         cameraProvider.unbindAll()
 
-        //绑定新的用力到相机
+        //绑定新的用例到相机
         try {
-            // A variable number of use-cases can be passed here -
-            // camera provides access to CameraControl & CameraInfo
+
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview
+                this, cameraSelector, preview,imageAnalyzer
             )
 
-            // Attach the viewfinder's surface provider to preview use case
             // 输出预览视频到view
             preview?.surfaceProvider = binding.cameraPreview.surfaceProvider
         } catch (exc: Exception) {
@@ -218,9 +212,13 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
         }
     }
 
+    /**
+     * 检测姿态
+     */
     private fun detectPose(imageProxy: ImageProxy) {
         // 检查 poseLandmarkerHelper 是否已初始化
         if(this::poseLandmarkerHelper.isInitialized) {
+            //两个参数，图像帧和相机是否前置
             poseLandmarkerHelper.detectLiveStream(
                 imageProxy = imageProxy,
                 isFrontCamera = cameraFacing == CameraSelector.LENS_FACING_FRONT
@@ -243,11 +241,13 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
         resultBundle: PoseLandmarkerHelper.ResultBundle
     ) {
         activity?.runOnUiThread {
+            //isAdded确保回调处理时fragment没有被移除
             if (isAdded) {
+                //更新延迟时间
                 val inferenceTime = resultBundle.inferenceTime
                 binding.inferenceTimeVal.text = inferenceTime.toString()
 
-                // Pass necessary information to OverlayView for drawing on the canvas
+                //更新骨架图
                 binding.overlay.setResults(
                     resultBundle.results.first(),
                     resultBundle.inputImageHeight,
@@ -255,7 +255,6 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
                     RunningMode.LIVE_STREAM
                 )
 
-                // Force a redraw
                 binding.overlay.invalidate()
             }
         }
@@ -268,6 +267,7 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
     }
 
     private fun showFragment() {
+        //先设置poseLandmarkerHelper当前的参数
         poseLandmarkerSettingFragment.setPoseLandmarkerSettingChangedListener{
             backgroundExecutor.execute {
                 poseLandmarkerHelper.clearPoseLandmarker()
@@ -278,9 +278,8 @@ class CameraModelFragment : Fragment() , PoseLandmarkerHelper.LandmarkerListener
         childFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, poseLandmarkerSettingFragment)
             .commit()
-
+        //设置poseLandmarkerSettingFragment的容器可见,添加呼出时的动画效果
         binding.fragmentContainer.visibility = View.VISIBLE
-        binding.fragmentContainer.translationY = -binding.fragmentContainer.height.toFloat()
         binding.fragmentContainer.animate()
             .translationY(0f)
             .setDuration(300)

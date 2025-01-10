@@ -32,8 +32,11 @@ class CameraControlFragment : Fragment() {
     ): View {
         binding=FragmentCameraControlBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(requireActivity())[PoseCameraViewModel::class.java]
+        //控制相机模式下识别的开关
         binding.cameraModelSwitchIv.setOnClickListener {
+            //设置该模式的viewModel中相机状态
             viewModel.setCameraStatus(!binding.cameraModelSwitchIv.isSelected)
+            //更新图标ui
             binding.cameraModelSwitchIv.isSelected=!binding.cameraModelSwitchIv.isSelected
         }
         return binding.root

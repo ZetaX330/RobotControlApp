@@ -9,6 +9,9 @@ import com.example.rcapp.fragment.poseLandmarker.ImageControlFragment
 import com.example.rcapp.fragment.poseLandmarker.ImageModelFragment
 import com.example.rcapp.fragment.poseLandmarker.VideoControlFragment
 
+/**
+ * 切换识别模式的vp2，这里是切换下方的control fragment
+ */
 class RunningModelVp2Adapter (activity: FragmentActivity) : FragmentStateAdapter(activity) {
     override fun getItemCount(): Int = 3
 
