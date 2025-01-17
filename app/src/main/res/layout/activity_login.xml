@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.viewmodel.activity.LoginActivity"
+    tools:context=".ui.activity.LoginActivity"
     android:orientation="vertical"
     android:gravity="center_horizontal">
     <LinearLayout
@@ -79,7 +79,7 @@
                     android:id="@+id/login_verification_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"/>
+                    android:inputType="number"/>
             </com.google.android.material.textfield.TextInputLayout>
             <View
                 android:layout_width="0dp"
@@ -122,13 +122,16 @@
             android:text="@string/注册"
             android:textSize="18sp"/>
     </LinearLayout>
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/login_btn"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
         android:text="@string/登录"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:backgroundTint="@color/light_blue_gray"
         android:textSize="25sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
