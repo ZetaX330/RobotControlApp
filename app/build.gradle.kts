@@ -66,11 +66,16 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation (libs.androidx.lifecycle.livedata.ktx) // 或最新版本
     testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+
     implementation(libs.okhttp)
     implementation(libs.swiperefreshlayout)
     implementation (libs.tasks.vision)
+    implementation (libs.kotlinx.serialization.json)
 
+    implementation (libs.com.squareup.retrofit2.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.logging.interceptor)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 
 }

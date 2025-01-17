@@ -1,4 +1,5 @@
 <resources>
+    <string name="nu11">null</string>
     <string name="app_name">RCApp</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="蓝牙">蓝牙</string>
@@ -57,6 +58,24 @@
     <string name="inference_time">%d</string>
     <string name="camera_time">00:00:00</string>
     <string name="毫秒">ms</string>
+    <string name="账号">账号</string>
+    <string name="密码">密码</string>
+    <string name="登录">登录</string>
+    <string name="注册">注册</string>
+    <string name="确认密码">确认密码</string>
+    <string name="手机号">手机号</string>
+    <string name="电子邮箱">电子邮箱</string>
+    <string name="自动登录">自动登录</string>
+    <string name="男">男</string>
+    <string name="女">女</string>
+    <string name="保密">保密</string>
+    <string name="连接设备">连接设备</string>
+    <string name="附近设备">附近设备</string>
+    <string name="名称">名称</string>
+    <string name="验证码">验证码</string>
+    <string name="发送验证码">发送验证码</string>
+    <string name="验证码登录">验证码登录</string>
+    <string name="输入密码">输入密码</string>
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>
         <item>GPU</item>

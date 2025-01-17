@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.poseLandmarker.ImageModelFragment">
+    tools:context=".ui.fragment.poseLandmarker.ImageModelFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -42,7 +42,7 @@
         android:contentDescription="@null"
         android:visibility="gone" />
 
-    <com.example.rcapp.OverlayView
+    <com.example.rcapp.ui.fragment.poseLandmarker.OverlayView
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

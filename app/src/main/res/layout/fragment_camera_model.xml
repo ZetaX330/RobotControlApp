@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.poseLandmarker.CameraModelFragment">
+    tools:context=".ui.fragment.poseLandmarker.CameraModelFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -44,23 +44,36 @@
                 android:text="@string/毫秒"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
-            <Chronometer
-                android:id="@+id/camera_time_chr"
+            <LinearLayout
+                android:id="@+id/camera_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/bottom_sheet_text_color"
-                android:textSize="@dimen/bottom_sheet_text_size" />
-
-            <Space
-                android:layout_width="66dp"
-                android:layout_height="match_parent" />
+                android:gravity="center_horizontal"
+                android:visibility="invisible">
+                <ImageView
+                    android:id="@+id/camera_ticking_iv"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_camera_ticking"/>
+                <Chronometer
+                    android:id="@+id/camera_time_chr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/bottom_sheet_text_color"
+                    android:textSize="@dimen/bottom_sheet_text_size"
+                    android:fontFamily="@font/alibaba_puhuiti_65_medium" />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/plc_setting_iv"
                 android:layout_width="36dp"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginStart="76dp"
                 android:layout_marginEnd="5dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_plm_setting" />
@@ -81,7 +94,7 @@
                 android:layout_height="match_parent"
                 app:scaleType="fillStart" />
 
-                <com.example.rcapp.OverlayView
+                <com.example.rcapp.ui.fragment.poseLandmarker.OverlayView
                     android:id="@+id/overlay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

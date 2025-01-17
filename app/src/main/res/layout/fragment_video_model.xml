@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.poseLandmarker.VideoModelFragment"
+    tools:context=".ui.fragment.poseLandmarker.VideoModelFragment"
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,7 +46,7 @@
             android:layout_height="match_parent"
             android:scaleType="fitCenter"/>
 
-<!--        <com.example.rcapp.OverlayView-->
+<!--        <com.example.rcapp.fragment.poseLandmarker.OverlayView-->
 <!--            android:id="@+id/overlay"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent" />-->

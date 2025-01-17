@@ -5,20 +5,20 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.rcapp.fragment.RobotMainFragment"
+        android:name="com.example.rcapp.ui.fragment.RobotMainFragment"
         android:label="Home" />
 
     <fragment
         android:id="@+id/userFragment"
-        android:name="com.example.rcapp.fragment.UserFragment"
+        android:name="com.example.rcapp.ui.fragment.UserFragment"
         android:label="User" />
     <fragment
         android:id="@+id/userFragment1"
-        android:name="com.example.rcapp.fragment.UserFragment"
+        android:name="com.example.rcapp.ui.fragment.UserFragment"
         android:label="User" />
     <fragment
         android:id="@+id/userFragment2"
-        android:name="com.example.rcapp.fragment.UserFragment"
+        android:name="com.example.rcapp.ui.fragment.UserFragment"
         android:label="User" />
 
 

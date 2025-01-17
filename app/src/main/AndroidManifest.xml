@@ -30,45 +30,49 @@
         android:theme="@style/Theme.RCApp"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activity.LoginActivity"
-            android:exported="false">
-        </activity>
-        <activity
-            android:name=".activity.QuestionActivity"
+            android:name=".ui.activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.BluetoothDeviceActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.BleServiceBaseActivity"
-            android:exported="false"
-            android:label="@string/title_activity_ble_service_base"
-            android:theme="@style/Theme.RCApp" />
-        <activity
-            android:name=".activity.SettingActivity"
-            android:exported="false" />
-
-        <service
-            android:name=".service.BluetoothService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="TODO" />
-
-        <activity
-            android:name=".activity.PoseLandmarkerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.BluetoothLinkActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:name=".ui.activity.LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.viewmodel.activity.QuestionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.viewmodel.activity.BluetoothDeviceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.viewmodel.activity.BleServiceBaseActivity"
+            android:exported="false"
+            android:label="@string/title_activity_ble_service_base"
+            android:theme="@style/Theme.RCApp" />
+        <activity
+            android:name=".ui.viewmodel.activity.SettingActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".data.service.BluetoothService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="TODO" />
+
+        <activity
+            android:name=".ui.viewmodel.activity.PoseLandmarkerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.viewmodel.activity.BluetoothLinkActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.viewmodel.activity.MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+
         </activity>
     </application>
 

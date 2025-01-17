@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainActivity">
+    tools:context=".ui.viewmodel.activity.MainActivity"
+    android:orientation="vertical">
 
     <!-- 自定义工具栏 -->
-    <com.example.rcapp.toolbar.MainBluetoothToolbar
+    <com.example.rcapp.ui.toolbar.MainBluetoothToolbar
         android:id="@+id/myToolbar"
         android:layout_width="match_parent"
         android:layout_height="55dp" />
@@ -18,7 +19,8 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         app:navGraph="@navigation/nav_graph"
         android:name="androidx.navigation.fragment.NavHostFragment" />
 
@@ -31,4 +33,4 @@
         app:itemRippleColor="@android:color/transparent"
         app:menu="@menu/main_bottom_menu" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

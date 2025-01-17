@@ -2,11 +2,11 @@
     <item
         android:id="@+id/homeFragment"
         android:title=""
-        android:icon="@drawable/ic_home" />
+        android:icon="@drawable/ic_bottom_navigation_home" />
     <item
         android:id="@+id/userFragment"
         android:title=""
-        android:icon="@drawable/ic_robot" />
+        android:icon="@drawable/ic_bottom_navigation_robot" />
     <item
         android:id="@+id/userFragment1"
         android:title=""
@@ -14,5 +14,5 @@
     <item
         android:id="@+id/userFragment2"
         android:title=""
-        android:icon="@drawable/ic_user"/>
+        android:icon="@drawable/ic_bottom_navigation_user"/>
 </menu>

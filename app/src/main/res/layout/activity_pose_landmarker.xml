@@ -1,41 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.PoseLandmarkerActivity"
-    android:orientation="vertical">
+    tools:context=".ui.viewmodel.activity.PoseLandmarkerActivity">
+
     <FrameLayout
         android:id="@+id/running_model_fragment"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1">
-    </FrameLayout>
+        app:layout_constraintBottom_toTopOf="@+id/running_model_tl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="spread" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/running_model_tl"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_alignParentBottom="true" />
+        android:contentDescription="@string/nu11"
+        app:layout_constraintBottom_toTopOf="@id/running_model_vp2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/running_model_vp2"
         android:layout_width="match_parent"
-        android:layout_height="240dp" />
+        android:layout_height="240dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="240dp"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:background="@color/black">-->
-<!--        <ImageView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="75dp"-->
-<!--            android:layout_marginVertical="75dp"-->
-<!--            android:contentDescription="@null"-->
-<!--            android:src="@drawable/ic_camera_selector"-->
-<!--            android:layout_gravity="center_horizontal|bottom"-->
-<!--            android:layout_marginBottom="16dp"/>-->
-<!--    </LinearLayout>-->
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.constraintlayout.widget.ConstraintLayout>
