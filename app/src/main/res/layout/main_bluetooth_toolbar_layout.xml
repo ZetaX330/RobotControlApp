@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true">
     <data>
         <import type="android.view.View"/>
         <variable
@@ -10,15 +11,13 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.Material3.DynamicColors.Light.NoActionBar">
+        android:theme="@style/Theme.Material3.DynamicColors.Light.NoActionBar"
+        android:background="@color/light_blue_gray">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/main_tb"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@color/light_blue_gray"
-            app:title="">
-
+            android:layout_height="match_parent">
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardview"
                 android:layout_width="wrap_content"
@@ -84,6 +83,6 @@
                     </FrameLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-        </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
 </layout>

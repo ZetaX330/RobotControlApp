@@ -1,12 +1,15 @@
-package com.example.rcapp.ui.viewmodel.activity
+package com.example.rcapp.ui.activity
 
 import android.os.Bundle
 import android.widget.Toast
-import androidx.navigation.NavController
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.rcapp.R
 import com.example.rcapp.databinding.ActivityMainBinding
-import com.example.rcapp.ui.fragment.RobotMainFragment
+import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
 
 class MainActivity : BleServiceBaseActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -30,8 +33,14 @@ class MainActivity : BleServiceBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        //setContentView(binding!!.root)
-        setContentLayout(binding)
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        setContentView(binding.root)
+
         initMainNav()
     }
 

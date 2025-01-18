@@ -13,7 +13,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -21,63 +21,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintDimensionRatio="2:1"
-            app:cardCornerRadius="23dp"
+            app:cardCornerRadius="10dp"
             app:cardElevation="0dp">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/robot_show_vp2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </androidx.cardview.widget.CardView>
-
-<!--        <com.google.android.material.tabs.TabLayout-->
-<!--            android:id="@+id/indicator_tab_layout"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="5dp"-->
-<!--            app:tabIndicatorHeight="0dp"-->
-<!--            app:tabSelectedTextColor="@android:color/black"-->
-<!--            app:tabTextColor="@android:color/darker_gray"-->
-<!--            app:tabBackground="@android:color/transparent"-->
-<!--            app:tabRippleColor="@android:color/transparent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/cardview"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent" />-->
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:baselineAligned="false"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-        <LinearLayout
-            android:id="@+id/robot_main_camera_btn"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingTop="5dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="@drawable/rounded_corners">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_camera"
-                android:contentDescription="@string/摄像模拟" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="12sp"
-                android:gravity="center_vertical"
-                android:text="@string/摄像模拟" />
-        </LinearLayout>
-
         <LinearLayout
             android:id="@+id/robot_main_bluetooth_btn"
             android:layout_width="80dp"
@@ -86,8 +48,7 @@
             android:layout_marginStart="10dp"
             android:paddingTop="5dp"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="@drawable/rounded_corners">
+            android:gravity="center_horizontal">
 
             <ImageView
                 android:layout_width="30dp"
@@ -103,15 +64,37 @@
                 android:text="@string/蓝牙管理" />
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/robot_main_camera_btn"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingTop="5dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_camera"
+                android:contentDescription="@string/摄像模拟" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="12sp"
+                android:gravity="center_vertical"
+                android:text="@string/摄像模拟" />
+        </LinearLayout>
+
+
+        <LinearLayout
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
             android:paddingTop="5dp"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="@drawable/rounded_corners">
-
+            android:gravity="center_horizontal">
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -132,8 +115,7 @@
             android:layout_marginStart="10dp"
             android:paddingTop="5dp"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="@drawable/rounded_corners">
+            android:gravity="center_horizontal">
 
             <ImageView
                 android:layout_width="30dp"
@@ -149,5 +131,9 @@
                 android:text="@string/摄像模拟" />
         </LinearLayout>
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/light_blue_gray"/>
 </androidx.appcompat.widget.LinearLayoutCompat>

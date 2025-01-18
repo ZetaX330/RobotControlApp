@@ -1,8 +1,11 @@
-package com.example.rcapp.ui.viewmodel.activity
+package com.example.rcapp.ui.activity
 
 import android.Manifest.permission
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
 
 import com.example.rcapp.R
@@ -11,6 +14,7 @@ import com.example.rcapp.databinding.ActivityPoseLandmarkerBinding
 import com.example.rcapp.fragment.poseLandmarker.ImageModelFragment
 import com.example.rcapp.ui.fragment.poseLandmarker.CameraModelFragment
 import com.example.rcapp.ui.fragment.poseLandmarker.VideoModelFragment
+import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
 import com.google.android.material.tabs.TabLayoutMediator
 
 class PoseLandmarkerActivity  : BleServiceBaseActivity() {
@@ -22,6 +26,12 @@ class PoseLandmarkerActivity  : BleServiceBaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityPoseLandmarkerBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(binding.root.id)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         setContentView(binding.root)
         val adapter = RunningModelVp2Adapter(this)
         binding.runningModelVp2.adapter = adapter

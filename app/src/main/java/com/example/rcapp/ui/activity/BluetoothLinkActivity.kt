@@ -1,4 +1,4 @@
-package com.example.rcapp.ui.viewmodel.activity
+package com.example.rcapp.ui.activity
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -9,7 +9,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +24,7 @@ import com.example.rcapp.ui.adapter.ScanDeviceListAdapter
 import com.example.rcapp.databinding.ActivityBluetoothLinkBinding
 import com.example.rcapp.ui.fragment.BluetoothDeviceFragment
 import com.example.rcapp.ui.viewmodel.MainToolbarViewModel
+import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -25,8 +32,7 @@ import kotlinx.coroutines.launch
 class BluetoothLinkActivity : BleServiceBaseActivity() {
     private lateinit var binding: ActivityBluetoothLinkBinding
     private var scanDeviceListAdapter: ScanDeviceListAdapter? = null
-    private var willConnectDevice: BluetoothDevice? = null
-
+    private var connectionDevice: BluetoothDevice? = null
     /**
      *BluetoothService蓝牙服务绑定回调，在BleServiceBaseActivity中声明的抽象方法，由继承的Activity具体实现
      */
@@ -50,6 +56,7 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
                 if(gatt!=null){
                     //更新UI为连接上的设备
                     setDeviceConnected(gatt.device)
+                    connectionDevice=gatt.device
                 }
                 else{
                     binding.bluetoothConnected.visibility=View.GONE
@@ -62,7 +69,13 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         super.onCreate(savedInstanceState)
         Log.e("LifeCycle", "onCreate")
         binding = ActivityBluetoothLinkBinding.inflate(layoutInflater)
-        setContentLayout(binding)
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(binding.root.id)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        setContentView(binding.root)
         initMainToolbar()
         //初始化蓝牙设备列表adapter
         initListAdapter()
@@ -184,20 +197,23 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
     }
 
     /**
-     * 定义静态方法bleDeviceConnect
-     * 由LeDeviceListAdapter调用，处理连接设备的点击连接事件
-     * 不需要获得BluetoothLinkActivity的实例
+     * 由ScanDeviceListAdapter调用
      */
-    companion object {
-        fun bleDeviceConnect(bluetoothLinkActivity: BluetoothLinkActivity, position: Int) {
-            //先获取点击的具体设备
-            bluetoothLinkActivity.willConnectDevice = bluetoothLinkActivity.scanDeviceListAdapter!!.getItem(position).device
-            //更改toolbar状态，正在连接
-            MainToolbarViewModel.setBluetoothStatus("连接中", 3)
-            //调用BluetoothService的connectToDevice，连接该蓝牙设备
-            //该方法有最终有一个回调分支方法onConnectionStateChange，同时此Activity实现了BluetoothService的onBLEStatusInform
-            //BLEConnectionListener在onConnectionStateChang执行onBLEStatusInform，回传连接结果
-            bluetoothLinkActivity.bluetoothService!!.connectToDevice(bluetoothLinkActivity.willConnectDevice)
+    fun bleDeviceConnect(bluetoothLinkActivity: BluetoothLinkActivity, position: Int) {
+        //先获取点击的具体设备
+        val device = bluetoothLinkActivity.scanDeviceListAdapter!!.getItem(position).device
+        if(connectionDevice?.address==device.address){
+//            Toast.makeText(this,"蓝牙已连接",Toast.LENGTH_SHORT).show()
+            return
         }
+        //更改toolbar状态，正在连接
+        MainToolbarViewModel.setBluetoothStatus("连接中", 3)
+        //调用BluetoothService的connectToDevice，连接该蓝牙设备
+        //该方法有最终有一个回调分支方法onConnectionStateChange，同时此Activity实现了BluetoothService的onBLEStatusInform
+        //BLEConnectionListener在onConnectionStateChang执行onBLEStatusInform，回传连接结果
+        bluetoothService!!.connectToDevice(device)
+    }
+    companion object {
+
     }
 }

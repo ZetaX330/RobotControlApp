@@ -3,12 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("de.undercouch.download") version "5.4.0"
     id ("kotlin-parcelize")
+    id ("kotlin-kapt")
 
 }
 
 android {
     namespace = "com.example.rcapp"
     compileSdk = 34
+
     buildFeatures {
         viewBinding = true
         dataBinding = true

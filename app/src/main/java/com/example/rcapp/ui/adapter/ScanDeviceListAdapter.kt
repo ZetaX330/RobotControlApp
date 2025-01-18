@@ -1,7 +1,6 @@
 package com.example.rcapp.ui.adapter
 
 import android.Manifest.permission
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.bluetooth.le.ScanResult
@@ -9,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rcapp.ui.viewmodel.activity.BluetoothLinkActivity
+import com.example.rcapp.ui.activity.BluetoothLinkActivity
 import com.example.rcapp.databinding.ScanDeviceItemLayoutBinding
 
 class ScanDeviceListAdapter(private val context: Context) :
@@ -19,21 +18,21 @@ class ScanDeviceListAdapter(private val context: Context) :
         ArrayList()
     private val addressList : MutableList<String> =
         ArrayList()
-
     /**
      * 添加设备到列表中，bluetoothList.size-1为最新的设备下标号
      * 由于列表项是ScanResult，还需要再声明一个addressList存储设备硬件地址，防止同一设备多次加入bluetoothList
      * 循环判断bluetoothList中的硬件地址也是一种方式，ArrayList的contains时间复杂度是O（n）
      */
-    @SuppressLint("MissingPermission")
     fun addDevice(result: ScanResult) {
         val deviceAddress = result.device.address
+
         if (!addressList.contains(deviceAddress)) {
             bluetoothList.add(result)
             addressList.add(deviceAddress)
             notifyItemInserted((bluetoothList.size - 1))
         }
     }
+
 
     /**
      * 清除bluetoothList的同时还要清除addressList
@@ -80,7 +79,7 @@ class ScanDeviceListAdapter(private val context: Context) :
         holder.binding.root.setOnClickListener{
             if (context is BluetoothLinkActivity) {
                 //交给BluetoothLinkActivity处理
-                BluetoothLinkActivity.bleDeviceConnect(context, position)
+                context.bleDeviceConnect(context, position)
             }
         }
 

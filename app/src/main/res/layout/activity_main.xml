@@ -6,14 +6,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.viewmodel.activity.MainActivity"
+    tools:context=".ui.activity.MainActivity"
     android:orientation="vertical">
 
     <!-- 自定义工具栏 -->
     <com.example.rcapp.ui.toolbar.MainBluetoothToolbar
         android:id="@+id/myToolbar"
         android:layout_width="match_parent"
-        android:layout_height="55dp" />
+        android:layout_height="wrap_content" />
 
     <!-- Fragment 容器 -->
     <androidx.fragment.app.FragmentContainerView

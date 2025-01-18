@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.PoseLandmarkerActivity">
+    tools:context=".ui.activity.">
 
     <FrameLayout
         android:id="@+id/running_model_fragment"

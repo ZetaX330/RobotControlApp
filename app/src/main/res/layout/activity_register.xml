@@ -1,130 +1,192 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.RegisterActivity"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
-<!--    <com.google.android.material.appbar.MaterialToolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:subtitle="我是一个子标题"-->
-<!--        app:subtitleCentered="false"-->
-<!--        app:subtitleTextColor="@color/white"-->
-<!--        app:title="我是一个标题"-->
-<!--        app:logo="@drawable/ic_return"-->
-<!--        app:titleCentered="true"-->
-<!--        app:titleTextColor="@color/white" />-->
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.rcapp.ui.viewmodel.RegisterViewModel" />
+    </data>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.activity.RegisterActivity"
+        android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:hint="@string/名称"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/register_name_et"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:hint="@string/账号"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/register_account_et"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="1510000"
-            android:autofillHints="IMPORTANT_FOR_AUTOFILL_AUTO"
-            android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:hint="@string/密码"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:endIconMode="password_toggle">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/register_password_et"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/名称"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:endIconMode="clear_text">
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_name_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={viewModel.name}" />
+                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/register_name_check_iv"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/register_et_selector"
+                android:visibility="@{viewModel.nameVisibility}"
+                android:selected="@{viewModel.nameValidity}"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1510000"
-            android:autofillHints="password"
-            android:inputType="textPassword"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:hint="@string/确认密码"
-        app:endIconMode="password_toggle">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/register_password_confirm_et"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/手机号"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:endIconMode="clear_text">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_phone_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={viewModel.phone}"
+                    android:autofillHints="phone"
+                    android:inputType="phone" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/register_phone_check_iv"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/register_et_selector"
+                android:visibility="@{viewModel.phoneVisibility}"
+                android:selected="@{viewModel.phoneValidity}" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1510000"
-            android:autofillHints="password"
-            android:inputType="textPassword"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:hint="@string/手机号"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/register_phone_et"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/密码"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:endIconMode="password_toggle">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_password_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="password"
+                    android:inputType="textPassword"
+                    android:text="@={viewModel.password}" />
+                </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/register_password_check_iv"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/register_et_selector"
+                android:visibility="@{viewModel.passwordVisibility}"
+                android:selected="@{viewModel.passwordValidity}" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1510000"
-            android:autofillHints="phone"
-            android:inputType="phone"/>
-        </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:hint="@string/电子邮箱"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/register_email_box_et"
-            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="1510000@qq.com"
-            android:autofillHints="emailAddress"
-            android:inputType="textEmailAddress"/>
+            android:layout_weight="1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:hint="@string/确认密码"
+            app:endIconMode="password_toggle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/register_password_confirm_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="password"
+                android:inputType="textPassword"
+                android:text="@={viewModel.passwordConfirm}" />
         </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/register_submit_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:background="@drawable/rounded_edittext"
-        android:backgroundTint="@color/light_blue_gray"
-        android:text="@string/注册"
-        android:textSize="25sp" />
-</androidx.appcompat.widget.LinearLayoutCompat>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/register_password_confirm_check_iv"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/register_et_selector"
+                android:visibility="@{viewModel.passwordConfirmVisibility}"
+                android:selected="@{viewModel.passwordConfirmValidity}" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/电子邮箱"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:endIconMode="clear_text">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/register_email_box_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@={viewModel.email}"
+                android:autofillHints="emailAddress"
+                android:inputType="textEmailAddress"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/register_email_check_iv"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/register_et_selector"
+                android:visibility="@{viewModel.emailVisibility}"
+                android:selected="@{viewModel.emailValidity}" />
+        </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/register_submit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:text="@string/注册"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:backgroundTint="@color/light_blue_gray"
+            android:textSize="25sp" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

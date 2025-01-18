@@ -20,6 +20,7 @@ class MainBluetoothToolbar @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : AppBarLayout(context, attrs, defStyleAttr) {
+    private var isBluetoothOpen:Boolean? = null
 
     // 绑定布局文件，初始化视图绑定对象
     private var binding: MainBluetoothToolbarLayoutBinding =
@@ -46,6 +47,8 @@ class MainBluetoothToolbar @JvmOverloads constructor(
             // 如果生命周期所有者为 null，记录错误日志
             Log.e("MainToolbar", "LifecycleOwner is null")
         }
+        dropDeviceName()
+        setBluetoothOnClickListener()
     }
 
     /**
@@ -90,8 +93,18 @@ class MainBluetoothToolbar @JvmOverloads constructor(
     /**
      * 蓝牙图标的点按监听，由子类Activity实现
      */
-    fun setBluetoothOnClickListener(listener: (View) -> Unit){
-        binding.bluetoothManageIv.setOnClickListener(listener)
+    private fun setBluetoothOnClickListener(){
+        binding.bluetoothManageIv.setOnClickListener {
+            if(!isBluetoothOpen!!)
+                return@setOnClickListener
+            if(binding.bluetoothNameTv.visibility==View.GONE){
+                expandDeviceName()
+            }
+            else if(binding.bluetoothNameTv.visibility==View.VISIBLE){
+                dropDeviceName()
+            }
+        }
+
     }
 
     /**
@@ -105,29 +118,27 @@ class MainBluetoothToolbar @JvmOverloads constructor(
         binding.bluetoothManageIv.visibility = INVISIBLE
         binding.bluetoothIcBackgroundIv.visibility = INVISIBLE
         binding.loadingIv.visibility = VISIBLE
-        expandDeviceName()
         val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.load_anim)
         binding.loadingIv.startAnimation(fadeInAnimation)
     }
 
     //关闭状态设置图标为未选中，图标呈现灰色
     private fun showCLOSEDStatus() {
+        isBluetoothOpen=false
         hideLoadingAnimation()
         binding.bluetoothManageIv.isSelected = false
         dropDeviceName()
-
     }
     //蓝牙开启未连接设置图标为选中，图标呈现蓝色
     private fun showDisconnectedStatus() {
+        isBluetoothOpen=true
         hideLoadingAnimation()
         binding.bluetoothManageIv.isSelected = true
-        dropDeviceName()
     }
     //蓝牙开启已连接设置图标为选中，图标呈现蓝色，设备名为已连接的设备的名
     private fun showConnectedStatus() {
         hideLoadingAnimation()
         binding.bluetoothManageIv.isSelected = true
-        expandDeviceName()
     }
     //蓝牙加载设置图标为加载图标，通过旋转动画表现加载
 

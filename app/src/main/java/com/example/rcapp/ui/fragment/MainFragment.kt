@@ -16,7 +16,7 @@ import com.example.rcapp.databinding.FragmentMainBinding
 import com.example.rcapp.model.InstructionSend
 import com.example.rcapp.ui.adapter.InsSendListAdapter
 import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
-import com.example.rcapp.ui.viewmodel.activity.PoseLandmarkerActivity
+import com.example.rcapp.ui.activity.PoseLandmarkerActivity
 import java.time.LocalTime
 import java.util.UUID
 

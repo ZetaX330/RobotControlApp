@@ -31,7 +31,9 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.activity.RegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+
         <activity
             android:name=".ui.activity.LoginActivity"
             android:exported="true">
@@ -63,13 +65,13 @@
             android:permission="TODO" />
 
         <activity
-            android:name=".ui.viewmodel.activity.PoseLandmarkerActivity"
+            android:name=".ui.activity.PoseLandmarkerActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.viewmodel.activity.BluetoothLinkActivity"
+            android:name=".ui.activity.BluetoothLinkActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.viewmodel.activity.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
 

@@ -1,4 +1,4 @@
-package com.example.rcapp.fragment
+package com.example.rcapp.ui.fragment
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle

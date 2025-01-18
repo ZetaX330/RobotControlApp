@@ -1,31 +1,34 @@
 package com.example.rcapp.model
+import com.example.rcapp.BR
+
+import androidx.databinding.BaseObservable
+import androidx.databinding.Bindable
 data class User(
-    val id: Int?=null,
-    val name: String?=null,
-    val account:String,
-    var password:String,
-    val phone:String,
-    val gender:Int,
-    val email: String? = null,
-){
-    // Validate email format
-    fun validateEmail(): Boolean? {
-        return email?.let { android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches() }
+    val id: Int? = 0,
+    val name: String = "",
+    var phone: String = "",
+    var password: String = "",
+    val email: String = ""
+) {
+    companion object {
+        fun isNameValid(phone: String): Boolean {
+            return phone.length <= 11
+        }
+        fun isPhoneValid(phone: String): Boolean {
+            return phone.length == 11
+        }
+        /**
+         * (?=.*[A-Za-z]): 至少包含一个字母。
+         * (?=.*\\d): 至少包含一个数字。
+         * [A-Za-z\\d]{9,}: 总长度至少为 9
+         */
+        fun isPasswordValid(password: String): Boolean {
+            val passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{9,}$"
+            return password.matches(Regex(passwordPattern))
+        }
+        fun isEmailValid(email: String): Boolean {
+            return email.let { android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches() }
+        }
     }
-
-    // Validate phone format
-    fun validatePhone(): Boolean {
-        return android.util.Patterns.PHONE.matcher(phone).matches()
-    }
-
-    // Encrypt password (simple example)
-    fun encryptPassword() {
-//        password = android.util.Base64.encodeToString(password.toByteArray(), android.util.Base64.DEFAULT)
-    }
-
-    // Decrypt password (simple example)
-    fun decryptPassword() {
-//        password = String(android.util.Base64.decode(password, android.util.Base64.DEFAULT))
-    }
-
 }
+

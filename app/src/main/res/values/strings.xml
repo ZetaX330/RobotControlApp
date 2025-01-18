@@ -64,7 +64,7 @@
     <string name="注册">注册</string>
     <string name="确认密码">确认密码</string>
     <string name="手机号">手机号</string>
-    <string name="电子邮箱">电子邮箱</string>
+    <string name="电子邮箱">电子邮箱(选填)</string>
     <string name="自动登录">自动登录</string>
     <string name="男">男</string>
     <string name="女">女</string>
@@ -76,6 +76,7 @@
     <string name="发送验证码">发送验证码</string>
     <string name="验证码登录">验证码登录</string>
     <string name="输入密码">输入密码</string>
+    <string name="RCApp">RCApp</string>
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>
         <item>GPU</item>
@@ -85,5 +86,20 @@
         <item>Pose Landmarker Full</item>
         <item>Pose Landmarker Lite</item>
         <item>Pose Landmarker Heavy</item>
+    </string-array>
+    <string-array name="register_name_reminder_message">
+        <item>1.用户名不得为空</item>
+        <item>2.用户名最长为11个字符</item>
+    </string-array>
+    <string-array name="register_phone_reminder_message">
+        <item>1.手机号为固定11位数字</item>
+    </string-array>
+
+    <string-array name="register_password_reminder_message">
+        <item>1.密码最短为9个字符，最长为18个字符</item>
+        <item>2.密码必须包含字母与数字，无特殊字符</item>
+    </string-array>
+    <string-array name="register_email_reminder_message">
+        <item>1.邮箱号为常规邮箱格式</item>
     </string-array>
 </resources>

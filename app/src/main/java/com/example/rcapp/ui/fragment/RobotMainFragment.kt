@@ -10,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager2.widget.ViewPager2
 import com.example.rcapp.R
-import com.example.rcapp.ui.viewmodel.activity.BluetoothLinkActivity
-import com.example.rcapp.ui.viewmodel.activity.PoseLandmarkerActivity
+import com.example.rcapp.ui.activity.BluetoothLinkActivity
+import com.example.rcapp.ui.activity.PoseLandmarkerActivity
 import com.example.rcapp.ui.adapter.RobotMainVp2Adapter
 import com.example.rcapp.databinding.FragmentRobotMainBinding
 

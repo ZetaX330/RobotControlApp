@@ -40,7 +40,7 @@ abstract class BleServiceBaseActivity: AppCompatActivity() {
     private var isBound = false
     //创建一个抽象方法，用于绑定蓝牙Service后ServiceConnection回调中不同Activity的处理
     protected abstract fun onBluetoothServiceConnected()
-    private var binding : ActivityBleServiceBaseBinding?=null
+    private lateinit var binding : ActivityBleServiceBaseBinding
     /**
      * 绑定Service后的回调，使用匿名对象实现 ServiceConnection 接口
      */
@@ -68,7 +68,7 @@ abstract class BleServiceBaseActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBleServiceBaseBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
         requestLocationPermission()
         Log.e("LifeCycle","onCreateBase")
         bindBluetoothService()
@@ -86,10 +86,10 @@ abstract class BleServiceBaseActivity: AppCompatActivity() {
         super.onDestroy()
         unbindBluetoothService()
     }
-    protected fun setContentLayout(binding: ViewBinding) {
-        val container = findViewById<FrameLayout>(R.id.base_container)
-        container.addView(binding.root)
-    }
+//    protected fun setContentLayout(binding: ViewBinding) {
+//        val container = findViewById<FrameLayout>(R.id.base_container)
+//        container.addView(binding.root)
+//    }
 
     /**
      * 蓝牙Service绑定
