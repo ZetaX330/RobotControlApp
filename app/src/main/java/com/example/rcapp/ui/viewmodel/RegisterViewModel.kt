@@ -52,8 +52,8 @@ class RegisterViewModel : ViewModel() {
             _passwordValidity.value = User.isPasswordValid(passwordNumber)
         }
         passwordConfirm.observeForever { passwordConfirmNumber ->
-            _phoneVisibility.value = if (passwordConfirmNumber.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
-            _phoneValidity.value = User.isPasswordValid(passwordConfirmNumber)
+            _passwordConfirmVisibility.value = if (passwordConfirmNumber.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+            _passwordConfirmValidity.value = passwordConfirmNumber.equals(password.value.toString())
         }
         email.observeForever { emailString ->
             _emailVisibility.value = if (emailString.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE

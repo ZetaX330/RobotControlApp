@@ -42,7 +42,7 @@
         android:contentDescription="@null"
         android:visibility="gone" />
 
-    <com.example.rcapp.ui.fragment.poseLandmarker.OverlayView
+    <com.example.rcapp.ui.view.OverlayView
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

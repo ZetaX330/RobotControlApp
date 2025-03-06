@@ -9,13 +9,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,12 +21,13 @@ import com.example.rcapp.ui.adapter.ScanDeviceListAdapter
 import com.example.rcapp.databinding.ActivityBluetoothLinkBinding
 import com.example.rcapp.ui.fragment.BluetoothDeviceFragment
 import com.example.rcapp.ui.viewmodel.MainToolbarViewModel
-import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class BluetoothLinkActivity : BleServiceBaseActivity() {
+class BluetoothLinkActivity : BLEServiceBaseActivity() {
     private lateinit var binding: ActivityBluetoothLinkBinding
     private var scanDeviceListAdapter: ScanDeviceListAdapter? = null
     private var connectionDevice: BluetoothDevice? = null
@@ -41,24 +39,25 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         setDeviceScanListener()
         if (bluetoothService?.getBluetoothAdapter()?.isEnabled == true) {
             //先进行一次蓝牙设备扫描
-            bluetoothService!!.startScan()
+            CoroutineScope(Dispatchers.IO).launch {
+                bluetoothService?.startScan()
+            }
             val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.load_anim)
             binding.bluetoothScanIv.startAnimation(fadeInAnimation)
         }
         if (bluetoothService?.getBluetoothGatt() !=null){
-            setDeviceConnected(bluetoothService?.getBluetoothGatt()!!.device)
+            setDeviceConnected(bluetoothService!!.getBluetoothGatt()!!.device)
         }
         /**
          *此处setBLEConnectionListener传入的参数为Lambda表达式
          */
-        bluetoothService?.setBLEConnectionListener {gatt: BluetoothGatt?->
+        bluetoothService?.setBLEConnectionListener { gatt: BluetoothGatt?->
             runOnUiThread {
                 if(gatt!=null){
                     //更新UI为连接上的设备
                     setDeviceConnected(gatt.device)
                     connectionDevice=gatt.device
-                }
-                else{
+                } else{
                     binding.bluetoothConnected.visibility=View.GONE
                 }
             }
@@ -92,8 +91,11 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
     override fun onResume() {
         super.onResume()
         Log.e("LifeCycle", "onResume")
-        bluetoothService?.startScan()
+        CoroutineScope(Dispatchers.IO).launch {
+            bluetoothService?.startScan()
+        }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -143,7 +145,9 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         // 清空列表
         scanDeviceListAdapter!!.clearList()
         // 开启扫描
-        bluetoothService!!.startScan()
+        CoroutineScope(Dispatchers.IO).launch {
+            bluetoothService?.startScan()
+        }
         val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.load_anim)
         binding.bluetoothScanIv.startAnimation(fadeInAnimation)
         // 停止刷新动画
@@ -158,8 +162,7 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         bluetoothService?.setBLEScanListener { result: ScanResult? ->
             if (result != null) {
                 scanDeviceListAdapter?.addDevice(result)
-            }
-            else{
+            } else{
                 binding.bluetoothScanIv.clearAnimation()
             }
         }
@@ -211,7 +214,9 @@ class BluetoothLinkActivity : BleServiceBaseActivity() {
         //调用BluetoothService的connectToDevice，连接该蓝牙设备
         //该方法有最终有一个回调分支方法onConnectionStateChange，同时此Activity实现了BluetoothService的onBLEStatusInform
         //BLEConnectionListener在onConnectionStateChang执行onBLEStatusInform，回传连接结果
-        bluetoothService!!.connectToDevice(device)
+        CoroutineScope(Dispatchers.IO).launch {
+            bluetoothService?.connectToDevice(device)
+        }
     }
     companion object {
 

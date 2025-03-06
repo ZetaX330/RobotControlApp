@@ -2,7 +2,7 @@ package com.example.rcapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.rcapp.model.PoseLandmarkerHelper
+import com.example.rcapp.util.PoseLandmarkerHelper
 
 /**
  * 构造方法，用于创建能够传递poseLandmarkerHelper实例的ViewModel

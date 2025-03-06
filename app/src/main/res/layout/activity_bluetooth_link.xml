@@ -5,10 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="#F1F1F1"
     tools:context=".ui.activity.BluetoothLinkActivity"
     android:orientation="vertical">
-    <com.example.rcapp.ui.toolbar.MainBluetoothToolbar
+    <com.example.rcapp.ui.widget.MainBluetoothToolbar
         android:id="@+id/myToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -129,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
 
-            tools:listitem="@layout/scan_device_item_layout"/>
+            tools:listitem="@layout/item_list_scan_device"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

@@ -4,6 +4,7 @@ plugins {
     id("de.undercouch.download") version "5.4.0"
     id ("kotlin-parcelize")
     id ("kotlin-kapt")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"  // 正确插件ID
 
 }
 
@@ -17,7 +18,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.example.rcapp"
-        minSdk = 31
+        minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -66,18 +67,25 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation (libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.legacy.support.v4)
-    implementation (libs.androidx.lifecycle.livedata.ktx) // 或最新版本
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.core.splashscreen) // 或最新版本
     testImplementation(libs.junit)
 
     implementation(libs.okhttp)
     implementation(libs.swiperefreshlayout)
     implementation (libs.tasks.vision)
+    implementation ("com.google.mediapipe:tasks-core:0.10.20")
+
     implementation (libs.kotlinx.serialization.json)
 
     implementation (libs.com.squareup.retrofit2.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.logging.interceptor)
+
+    implementation ("com.github.yalantis:ucrop:2.2.8")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation (libs.circleindicator)
+
 
 }

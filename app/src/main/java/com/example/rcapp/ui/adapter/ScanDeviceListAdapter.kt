@@ -9,15 +9,15 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rcapp.ui.activity.BluetoothLinkActivity
-import com.example.rcapp.databinding.ScanDeviceItemLayoutBinding
+import com.example.rcapp.databinding.ItemListScanDeviceBinding
 
 class ScanDeviceListAdapter(private val context: Context) :
     RecyclerView.Adapter<ScanDeviceListAdapter.ViewHolder>() {
 
     private val bluetoothList: MutableList<ScanResult> =
-        ArrayList()
+        mutableListOf()
     private val addressList : MutableList<String> =
-        ArrayList()
+        mutableListOf()
     /**
      * 添加设备到列表中，bluetoothList.size-1为最新的设备下标号
      * 由于列表项是ScanResult，还需要再声明一个addressList存储设备硬件地址，防止同一设备多次加入bluetoothList
@@ -55,7 +55,7 @@ class ScanDeviceListAdapter(private val context: Context) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // 使用View Binding替代findViewById
         val inflater = LayoutInflater.from(context)
-        val binding = ScanDeviceItemLayoutBinding.inflate(inflater, parent, false)
+        val binding = ItemListScanDeviceBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -64,7 +64,7 @@ class ScanDeviceListAdapter(private val context: Context) :
         result.device
         // 检查BLUETOOTH_CONNECT权限
         if (ActivityCompat.checkSelfPermission(context, permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            (context as BluetoothLinkActivity).requestPermission(permission.BLUETOOTH_CONNECT)
+            (context as BluetoothLinkActivity).requestBluetoothPermission(permission.BLUETOOTH_CONNECT)
             return
         }
         //设置设备名
@@ -88,6 +88,6 @@ class ScanDeviceListAdapter(private val context: Context) :
     // ViewHolder继承自父类RecyclerView.ViewHolder
     class ViewHolder
     // 构造函数，接受一个 Binding参数
-    internal constructor(val binding: ScanDeviceItemLayoutBinding) :
+    internal constructor(val binding: ItemListScanDeviceBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

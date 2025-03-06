@@ -3,19 +3,15 @@ package com.example.rcapp.ui.activity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.example.rcapp.R
 import com.example.rcapp.databinding.ActivityMainBinding
-import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
 
-class MainActivity : BleServiceBaseActivity() {
+class MainActivity : BLEServiceBaseActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onBluetoothServiceConnected() {
         //先对本机进行BLE支持检测，如不支持则结束Activity，直接关闭App
-        if (!bluetoothService!!.isBluetoothSupported) {
+        if (!bluetoothService?.isBluetoothSupported!!) {
             Toast.makeText(this, "设备不支持BLE", Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -26,7 +22,7 @@ class MainActivity : BleServiceBaseActivity() {
         val state = bluetoothService!!.getBluetoothAdapter()?.state
         //执行setBluetoothState，如果蓝牙开启，修改toolbar蓝牙图标为选中状态，否则设为未选中，然后提醒用户打开蓝牙
         if (state != null) {
-            updateBluetoothUI(state,null)
+            updateBluetoothState(state,null)
         }
     }
 
@@ -34,11 +30,6 @@ class MainActivity : BleServiceBaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
         setContentView(binding.root)
 
         initMainNav()
@@ -54,13 +45,7 @@ class MainActivity : BleServiceBaseActivity() {
         //初始化 MainToolbar
     private fun initMainNav() {
         // 初始化 Toolbar
-        binding.myToolbar.let { toolbar ->
-            mainBluetoothToolbar=toolbar
-            // 设置 Toolbar
-            setSupportActionBar(toolbar.toolbar)
-            // 绑定 ViewModel
-            toolbar.setViewModel()
-        }
+
         // 初始化 BottomNavigationView 并绑定 NavController
         // 注意！当navHostFragment的容器为 FragmentContainerView时，navController的获取有所不同，即当前使用的方法
         // 需要先获取navHostFragment的实例，通过navHostFragment实例获取navController

@@ -1,0 +1,15 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 进度条背景 -->
+    <item android:id="@android:id/background">
+        <shape>
+            <solid
+                android:color="@color/white" />
+
+        </shape>
+    </item>
+    <item android:id="@android:id/progress">
+        <shape>
+            <solid android:color="@android:color/transparent" /> <!-- 透明进度 -->
+        </shape>
+    </item>
+</layer-list>

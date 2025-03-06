@@ -9,11 +9,6 @@
     tools:context=".ui.activity.MainActivity"
     android:orientation="vertical">
 
-    <!-- 自定义工具栏 -->
-    <com.example.rcapp.ui.toolbar.MainBluetoothToolbar
-        android:id="@+id/myToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <!-- Fragment 容器 -->
     <androidx.fragment.app.FragmentContainerView

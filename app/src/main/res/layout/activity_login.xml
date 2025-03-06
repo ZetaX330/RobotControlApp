@@ -7,7 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.LoginActivity"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:background="@color/white"
+    android:fitsSystemWindows="false">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -130,8 +133,8 @@
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:text="@string/登录"
+        android:textSize="25sp"
         style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:backgroundTint="@color/light_blue_gray"
-        android:textSize="25sp" />
+        android:backgroundTint="@color/light_blue_gray" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

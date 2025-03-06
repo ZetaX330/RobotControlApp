@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.Material3.DynamicColors.Light.NoActionBar"
-        android:background="@color/light_blue_gray">
+        android:background="@color/white">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/main_tb"
@@ -25,7 +25,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="10dp"
                 app:cardCornerRadius="23dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/light_blue_gray"
                 app:cardElevation="0dp">
 
                 <LinearLayout
@@ -52,7 +52,6 @@
                             android:layout_height="match_parent"
                             android:background="?attr/selectableItemBackground"
                             app:cardCornerRadius="19dp"
-                            app:cardBackgroundColor="@color/white"
                             app:cardElevation="0dp"
                             android:clickable="true"
                             android:focusable="true">
@@ -60,7 +59,7 @@
                                 android:id="@+id/bluetooth_ic_background_iv"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:background="@color/light_blue_gray"
+                                android:background="@color/white"
                                 android:contentDescription="@string/蓝牙"
                                 android:scaleType="centerInside" />
                         </androidx.cardview.widget.CardView>

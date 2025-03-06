@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- 修改后的实心圆路径 -->
+  <path
+      android:pathData="M16,0C7.163,0 0,7.163 0,16s7.163,16 16,16s16-7.163 16-16S24.837,0 16,0z"
+      android:fillColor="@color/black"/> <!-- 填充黑色 -->
+  <!-- 箭头部分保持不变（白色描边） -->
+  <path
+      android:pathData="M11,11l10,10l-6,5l0,-11"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/white"/>
+  <path
+      android:pathData="M11,21l10,-10l-6,-5l0,11"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/white"/>
+</vector>

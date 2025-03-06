@@ -1,4 +1,4 @@
-package com.example.rcapp.fragment.poseLandmarker
+package com.example.rcapp.ui.fragment.poseLandmarker
 
 import android.os.Bundle
 import android.view.LayoutInflater

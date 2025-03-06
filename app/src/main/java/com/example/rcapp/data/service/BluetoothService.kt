@@ -24,7 +24,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import com.example.rcapp.ui.viewmodel.activity.BleServiceBaseActivity
+import com.example.rcapp.ui.activity.BLEServiceBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -53,7 +53,7 @@ class BluetoothService : Service() {
     }
 
     private var scanning = false
-    private var bleServiceBaseActivity: BleServiceBaseActivity? = null
+    private var bleServiceBaseActivity: BLEServiceBaseActivity? = null
     private var bLEScanListener: BLEScanListener? = null
     private var bleConnectionListener: BLEConnectionListener? = null
 
@@ -67,7 +67,6 @@ class BluetoothService : Service() {
     fun interface BLEConnectionListener {
         fun onBLEConnection(gatt: BluetoothGatt?)
     }
-
     /**
      * 下面设置接口的方法都将接口示例当作参数
      * 如果使用Lambda表达式作为参数则应写为
@@ -82,7 +81,7 @@ class BluetoothService : Service() {
     }
 
     //其它Activity共同使用的服务，通过获取基类Activity，调用基类活动的方法实现
-    fun setBaseActivity(bleServiceBaseActivity: BleServiceBaseActivity?) {
+    fun setBaseActivity(bleServiceBaseActivity: BLEServiceBaseActivity?) {
         this.bleServiceBaseActivity = bleServiceBaseActivity
     }
 
@@ -155,10 +154,10 @@ class BluetoothService : Service() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    //请求权限，由Service交付给基类Activity检查，permission为附上要请求的权限类型
+    //请求权限，由 Service 交付给基类 Activity 检查，permission 为附上要请求的权限类型
     private fun requestPermission(permission: String) {
         if (bleServiceBaseActivity != null) {
-            bleServiceBaseActivity!!.requestPermission(permission)
+            bleServiceBaseActivity!!.requestBluetoothPermission(permission)
         }
     }
 
@@ -169,24 +168,22 @@ class BluetoothService : Service() {
             if (BluetoothAdapter.ACTION_STATE_CHANGED == intent.action) {
                 //获得广播中BluetoothAdapter.EXTRA_STATE的值，即设备的蓝牙状态，默认为BluetoothAdapter.ERROR
                 val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
-                if (bleServiceBaseActivity != null) {
-                    //更新BleServiceBaseActivity中蓝牙状态，实际上最终改变的是toolbar状态，以及相应状态的处理（比如弹出提醒框）
-                    if(state==BluetoothAdapter.STATE_OFF){
-                        if (!checkPermission(permission.BLUETOOTH_CONNECT)) {
-                            requestPermission(permission.BLUETOOTH_CONNECT)
-                            Log.e(TAG, "No Permission")
-                            return
-                        }
-                        //取消扫描超时处理任务
-                        scanJob?.cancel()
-                        //关闭Gatt
-                        closeGatt()
-                        //传递null，更新已连接设备UI
-                        bleConnectionListener?.onBLEConnection(null)
+                //更新BleServiceBaseActivity中蓝牙状态，实际上最终改变的是toolbar状态，以及相应状态的处理（比如弹出提醒框）
+                if(state==BluetoothAdapter.STATE_OFF){
+                    if (!checkPermission(permission.BLUETOOTH_CONNECT)) {
+                        requestPermission(permission.BLUETOOTH_CONNECT)
+                        Log.e(TAG, "No Permission")
+                        return
                     }
+                    //取消扫描超时处理任务
+                    scanJob?.cancel()
+                    //关闭Gatt
+                    closeGatt()
+                    //传递null，更新已连接设备UI
+                    bleConnectionListener?.onBLEConnection(null)
                 }
                 //更新toolbarUI和发送Toast
-                bleServiceBaseActivity!!.updateBluetoothUI(state, bluetoothGatt)
+                bleServiceBaseActivity?.updateBluetoothState(state, bluetoothGatt)
             }
         }
     }
@@ -195,6 +192,9 @@ class BluetoothService : Service() {
     fun startScan() {
         //确保bluetoothLeScanner不为null,为null则初始化scanner
         bluetoothLeScanner = bluetoothLeScanner ?: bluetoothAdapter?.bluetoothLeScanner
+        if(bluetoothLeScanner==null){
+            return
+        }
         //直接结束上次扫描
         stopScan()
         //取消连接超时任务
@@ -285,7 +285,7 @@ class BluetoothService : Service() {
                 bluetoothGatt?.close()
                 isConnected=false
                 //超时后若未连接上，更新toolbarUI并发生toast
-                bleServiceBaseActivity?.updateBluetoothUI(connectFailed,bluetoothGatt)
+                bleServiceBaseActivity?.updateBluetoothState(connectFailed,bluetoothGatt)
                 closeGatt()
             }
         }
@@ -296,7 +296,7 @@ class BluetoothService : Service() {
     private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             //无论状态如何，直接更新UI
-            bleServiceBaseActivity?.updateBluetoothUI(newState,gatt)
+            bleServiceBaseActivity?.updateBluetoothState(newState,gatt)
             //如果连接成功
             if (status == BluetoothGatt.GATT_SUCCESS&&newState == BluetoothGatt.STATE_CONNECTED) {
                 //连接成功后取消连接超时任务

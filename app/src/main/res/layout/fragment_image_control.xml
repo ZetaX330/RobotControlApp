@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.poseLandmarker.ImageControlFragment"
     android:orientation="vertical"
-    android:background="@color/light_gray">>
+    android:background="@color/light_gray">
     <ImageView
         android:id="@+id/camera_model_switch_iv"
         android:layout_width="match_parent"

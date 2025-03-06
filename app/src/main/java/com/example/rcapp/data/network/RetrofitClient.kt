@@ -1,7 +1,7 @@
 package com.example.rcapp.data.network
 
 import android.util.Log
-import com.example.rcapp.ServerConfig
+import com.example.rcapp.config.ServerConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

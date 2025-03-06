@@ -11,8 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.activity.RegisterActivity"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        android:background="@color/light_light_gray"
+        android:fitsSystemWindows="false">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/materialToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

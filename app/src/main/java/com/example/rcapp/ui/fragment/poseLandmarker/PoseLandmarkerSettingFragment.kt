@@ -9,7 +9,7 @@ import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.rcapp.databinding.FragmentPoseLandmarkerSettingBinding
-import com.example.rcapp.model.PoseLandmarkerHelper
+import com.example.rcapp.util.PoseLandmarkerHelper
 import com.example.rcapp.ui.viewmodel.PoseSettingViewModel
 
 class PoseLandmarkerSettingFragment  : Fragment() {

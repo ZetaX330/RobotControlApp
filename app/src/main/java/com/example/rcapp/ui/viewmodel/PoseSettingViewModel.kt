@@ -3,7 +3,7 @@ import androidx.lifecycle.LiveData
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.rcapp.model.PoseLandmarkerHelper
+import com.example.rcapp.util.PoseLandmarkerHelper
 import java.util.Locale
 
 /**

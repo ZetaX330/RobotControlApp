@@ -43,15 +43,12 @@
 
     <string name="label_inference_time">延时:</string>
     <string name="label_fps">Frames per Second</string>
-    <string name="label_pose_detection_confidence_threshold">Detection
-        Threshold</string>
-    <string name="label_pose_tracking_confidence_threshold">Tracking
-        Threshold</string>
-    <string name="label_pose_presence_confidence_threshold">Presence
-        Threshold</string>
+    <string name="label_pose_detection_confidence_threshold">检测置信度</string>
+    <string name="label_pose_tracking_confidence_threshold">跟踪置信度</string>
+    <string name="label_pose_presence_confidence_threshold">存在置信度</string>
     <string name="label_num_poses">Number of Poses</string>
-    <string name="label_delegate">Delegate</string>
-    <string name="label_models">Model</string>
+    <string name="label_delegate">委托</string>
+    <string name="label_models">模式</string>
     <string name="plc_setting">plc_setting</string>
     <string name="camera_switch">camera_switch\n</string>
     <string name="_0ms">0ms</string>
@@ -77,6 +74,16 @@
     <string name="验证码登录">验证码登录</string>
     <string name="输入密码">输入密码</string>
     <string name="RCApp">RCApp</string>
+    <string name="_1_0x">1.0x</string>
+    <string name="骨架图">骨架图</string>
+    <string name="自动追焦">自动追焦</string>
+    <string name="余额">余额</string>
+    <string name="推送">推送</string>
+    <string name="手机号_">手机号:</string>
+    <string name="录制视频">录制视频</string>
+    <string name="退出账号">退出账号</string>
+    <string name="头像">头像</string>
+    <string name="用户指令">用户指令</string>
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>
         <item>GPU</item>
@@ -98,6 +105,9 @@
     <string-array name="register_password_reminder_message">
         <item>1.密码最短为9个字符，最长为18个字符</item>
         <item>2.密码必须包含字母与数字，无特殊字符</item>
+    </string-array>
+    <string-array name="register_passwordConfirm_reminder_message">
+        <item>1.两次密码必须相同</item>
     </string-array>
     <string-array name="register_email_reminder_message">
         <item>1.邮箱号为常规邮箱格式</item>
